@@ -1,0 +1,9 @@
+libcurl4-openssl-dev
+zlib1g-dev
+libfontconfig1-dev
+libharfbuzz-dev 
+libfribidi-dev
+libfreetype6-dev
+libpng-dev
+libtiff5-dev
+libjpeg-dev

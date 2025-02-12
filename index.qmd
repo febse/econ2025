@@ -1,0 +1,113 @@
+# General Information {.unnumbered}
+
+:::{.callout-note}
+## Website URL
+
+<span style="font-size:2em">[https://febse.github.io/econ2024/](https://febse.github.io/econ2024/)</span>
+
+![](figures/qrcode.png)
+
+:::
+
+
+## Schedule
+
+1.  Tue 10:15-11:45 in room 303
+2.  Tue 12:15-13:45 in room 303
+3.  Tue 14:15-15:45 in room 303
+
+## Grading
+
+TBA
+
+## GitHub Repository
+
+All course materials for the exercise classes will be available in the GitHub repository:
+
+<https://github.com/febse/econ2024>
+
+## Software Setup
+
+The exercise classes require a minimal software setup:
+
+1.  Install Git for you operating system from [https://git-scm.com/downloads/](https://git-scm.com/downloads).
+
+2.  Open a GitHub account at <https://github.com/signup>. While you don't need an account to download the course materials, you will need one to receive and submit your assignments (this will be explained in details during the exercise classes). You can apply for the GitHub student benefits at <https://education.github.com/benefits>. If approved you can receive free access to the GitHub Pro plan and to GitHub Copilot, an AI tool that helps you write code.
+
+3.  Open <https://cran.r-project.org/>, and you will find links to R builds for different operating systems. Click on the link matching your operating system and choose the latest version of R. When using the Windows operating system, you will see a link "Install R for the first time ." Click on this link and then download the R installer. Run the installer. Leave the default settings unchanged unless you know what you are doing.
+
+4.  After installing R, open <https://posit.co/download/rstudio-desktop/>. If the web page recognizes your operating system, you will see a download button (right side of the page) for R studio. If the button does not appear, scroll down the page and find the installer appropriate for your operating system.
+
+5.  Should you encounter difficulties installing R and R Studio, you can watch these video guides:
+
+-   [Windows](https://www.youtube.com/watch?v=YrEe2TLr3MI)
+-   [Mac](https://www.youtube.com/watch?v=n8kP7c_QbLA)
+-   [Ubuntu 22.04](https://www.youtube.com/watch?v=NFEDEXWomI4)
+
+5.  Here are some video guides on how to install git:
+
+-   [Windows](https://www.youtube.com/watch?v=AdzKzlp66sQ)
+-   [Mac](https://www.youtube.com/watch?v=hMEyBtsuAJE)
+-   [Linux](https://www.youtube.com/watch?v=bc3_FL9zWWs)
+
+5.  **The following steps depend on git being installed**. Open R Studio and open a new project dialog: File -\> New Project. In the dialog, click on the third option: version control. From the next menu, select git.
+
+![Open a new project.](figures/RStudio_new_project_1.png) ![Select version control](figures/RStudio_new_project_2.png) ![Select git](figures/RStudio_new_project_3.png)
+
+In the Repository URL field, paste the address of the course repository:
+
+::: callout-caution
+## Repository URL
+
+Insert the following address in the Repository URL field:
+
+```         
+https://github.com/febse/econ2024.git
+```
+
+the one shown in the screenshot is outdated.
+:::
+
+![Paste the git repository address](figures/RStudio_new_project_4.png) Click on the Create Project button and wait for git R studio to clone the repository and open the project.
+
+:::{.callout-caution}
+## Renv
+
+To install the packages necessary for the course, click on the command line
+in the R console and type:
+
+```r
+renv::restore()
+```
+
+This will trigger the download and installation of all the dependencies. 
+It can take some time, so be patient. You only need to do it once for the project,
+:::
+
+![Step 5](figures/RStudio_new_project_renv.png)
+
+![Step 6](figures/RStudio_new_project_5.png) 6. The content of the GitHub repository will be updated continuously throughout the semester. In order to download the new files or updated versions of already existing files, you can use git pull. Open the git window in the upper right pane of R studio and click the pull button. This will download all changes from the GitHub repository to your local copy.
+
+![Step 7](figures/RStudio_new_project_7.png)
+
+8.  Note that if you have modified the files tracked by git that have changed in the repository, git pull will fail with an error similar to this one:
+
+![Pull error](figures/RStudio_new_project_8.png)
+
+To avoid this, you can roll back the file to its original state. Right-click on the file in the git window and choose "revert."
+
+![Revert](figures/RStudio_new_project_revert.png)
+
+9. In the exercise classes, we will use many functions from the `tidyverse` system and several other packages. Before accessing these packages' functionality, you need to install them first. Find the R console in R studio and paste the following line on the command line. Press enter to run it and wait for the installation to complete. The `renv` package will take care of the installation of the packages in a separate environment, so you should't worry about installing packages.
+
+In case it does not work, you can install the packages manually by running the following command in the R console:
+
+```r
+install.packages(c("tidyverse", "broom", "patchwork", "GGally", "caret", "plotly"))
+```
+
+
+
+Optional: more on Quarto: <https://quarto.org/docs/guide/>
+
+Optional: a base R cheatsheet: <https://www.datacamp.com/cheat-sheet/getting-started-r>

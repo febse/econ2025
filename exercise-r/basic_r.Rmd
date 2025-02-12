@@ -1,0 +1,146 @@
+```{r}
+library(tidyverse)
+
+install.packages(c("ottr", "testthat"))
+```
+
+# R Basics
+
+**Question 1:** What is the value of $\sqrt{27.3 + 15/2}$? Assign this value to `ans.1`
+
+**Hint:** Use the `sqrt` function in R and use the `<-` operator to assign the value to `ans.1`
+
+```{r}
+ans.1 <- NULL # YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q1.R")
+```
+
+**Question 2:** Create a vector with the integer values from 20 to 5013 (inclusive) and assign it to `x`. Then, calculate the sum of the elements in `x` and assign it to `x_sum`.
+
+**Hint:** Use the `:` operator to create the vector `x` and the `sum` function to calculate the sum.
+
+```{r}
+x <- 20:5013 # YOUR CODE HERE
+x_sum <- sum(x) # YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q2.R")
+```
+
+**Question 3:** The vector `bills_eur` holds the amounts of electricity bills of a small office for the last couple of months. Each element in the vector represents the amount of a bill in EUR for the given month.
+
+-   How many months of bills are in the vector? Assign the number of months to `bills_months`.
+
+-   How many years of bills are in the vector? Assign the number of years to `bills_years`.
+
+-   Create a new vector `bills_bgn` that holds the same amounts but in Bulgarian Lev (BGN). Use the fixed exchange rate of 1 EUR = 1.95583 BGN.
+
+-   Create a new vector `bills_high` that holds the amounts of bills that are greater than 400 EUR.
+
+-   In how many months did the bill exceed 400 EUR? Assign the number of months to `bills_high_count`.
+
+-   Create a new vector `bills_low` that holds the amounts of bills that are less than 200 EUR.
+
+-   Compute the average of `bills_high` and assign it to `bills_high_avg`.
+
+**Hint**: Use the `length`, `mean`, and `[]` functions to calculate the values. Use the `<` and the `>` logical operators to create vectors of logical values.
+
+```{r}
+bills_eur <- c(
+  231.2, 432.0, 123.5, 321.0, 543.2, 432.0, 123.5, 321.0, 543.2, 432.8, 123.5, 321.4, 1255.12, 
+  432.0, 123.5, 321.0, 543.2, 432.0, 123.5, 321.0, 543.2, 432.8, 123.5, 321.4
+)
+
+bills_months <- NULL # YOUR CODE HERE
+bills_years <- NULL # YOUR CODE HERE
+
+bills_bgn <- NULL # YOUR CODE HERE
+bills_high <- NULL # YOUR CODE HERE
+bills_high_count <- NULL # YOUR CODE HERE
+
+bills_low <- NULL # YOUR CODE HERE
+bills_high_avg <- NULL # YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q3.R")
+```
+
+The following code chunk download and reads a CSV file with the EUR/USD exchange rates between March 2022 and March 2024. The data is stored in the variable `ex`. It contains the following columns:
+
+-   `DATE` (date): The date of the exchange rate measurement
+-   `RATE` (numeric): The exchange rate of 1 USD per EUR
+-   `YEAR` (numeric): The year of the measurement
+-   `MONTH` (numeric): The month of the measurement
+
+```{r}
+ex <- read_csv("https://raw.githubusercontent.com/febse/data/main/econ/ECB_EUR_USD_exchange_rate_1999_2024_Mar_prepped.csv")
+```
+
+```{r}
+ex %>% glimpse()
+```
+
+**Question 4:** In this question we will work with the `ex` data frame to compute a few basic summaries.
+
+-   How many rows and columns are there in `ex`? Assign the number of rows to `ex_rows` and the number of columns to `ex_cols`. Use the `nrow` and `ncol` functions to calculate the values.
+-   What is the first date in the data? Assign the date to `ex_first_date`.
+-   How many unique years are there in the data? Assign the number of unique years to `ex_unique_years`. *Hint:* Use the `unique` and `length` functions to calculate the value.
+-   What is the average exchange rate in the data? Use the `mean` function to calculate the value and assign it to `ex_avg_rate`. Set the `na.rm` argument of `mean` to `TRUE` to ignore missing values.
+-   On how many days was the exchange rate greater than 1? Use the `mutate` function to create a new column `RATE_GT_1` that holds logical values indicating whether the exchange rate is greater than 1. Then use the `sum` function to calculate the number of days and assign it to `ex_days_gt_1`. Set the `na.rm` argument of `sum` to `TRUE` to ignore missing values.
+-   Create a new column `RATE_EUR_USD` that holds the exchange rate of 1 EUR per USD. Use the `mutate` function to create the new column.
+
+```{r}
+ex_rows <- NULL # YOUR CODE HERE
+ex_cols <- NULL # YOUR CODE HERE
+
+ex_first_date <- NULL # YOUR CODE HERE
+ex_unique_years <- NULL # YOUR CODE HERE
+
+ex_avg_rate <- NULL # YOUR CODE HERE
+
+ex <- NULL # YOUR CODE HERE
+ex_days_gt_1 <- NULL # YOUR CODE HERE
+
+ex <- NULL # YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q4.R")
+```
+
+**Question 5:** In this question we will work with the `ex` data frame one more time.
+
+-   Create a new column `RATE_EUR_USD` that holds the exchange rate of 1 EUR per USD. Use the `mutate` function to create the new column.
+-   Compute the average `RATE` using the `summarize` function. Call the column `RATE_AVG` and store the resulting `tibble` under `ex_avg_rate_tibble`. Use the `mean` function to calculate the value and set the `na.rm` argument to `TRUE` to ignore missing values.
+-   Compute the average `RATE` by year using the `group_by` and `summarize` functions. Call the column `RATE_AVG` and store the resulting `tibble` under `ex_avg_rate_by_year`. Use the `mean` function to calculate the value and set the `na.rm` argument to `TRUE` to ignore missing values.
+-   Compute the average `RATE` and the standard deviation of `RATE` by year and month using the `group_by` and `summarize` functions. Call the columns `RATE_AVG` and `RATE_STD` and store the resulting `tibble` under `ex_avg_rate_by_year_month`. Use the `mean` function to calculate the value and set the `na.rm` argument to `TRUE` to ignore missing values. Use the `sd` function to calculate the standard deviation and set the `na.rm` argument to `TRUE` to ignore missing values.
+
+```{r}
+ex <- NULL # YOUR CODE HERE
+
+ex_avg_rate_tibble <- ex %>% 
+  # YOUR CODE HERE
+    RATE_AVG = NULL # YOUR CODE HERE
+  ) 
+ex_avg_rate_by_year <- ex %>% 
+  # YOUR CODE HERE
+  summarize(
+    RATE_AVG = NULL # YOUR CODE HERE
+  )
+
+ex_avg_rate_by_year_month <- ex %>% 
+  # YOUR CODE HERE
+  # YOUR CODE HERE
+    RATE_AVG = NULL # YOUR CODE HERE
+    RATE_STD = NULL # YOUR CODE HERE
+# YOUR CODE HERE
+```
+
+```{r}
+. = ottr::check("tests/q5.R")
+```

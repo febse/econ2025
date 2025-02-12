@@ -1,0 +1,48 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+	"name": "Ubuntu",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    "features": {
+		"ghcr.io/rocker-org/devcontainer-features/r-apt:latest": {},
+		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+			"packages": [
+				"r-cran-tidyverse",
+				"r-cran-rmarkdown",
+				"r-cran-plotly",
+				"r-cran-patchwork",
+				"r-cran-ggally",
+				"r-cran-broom",
+				"r-cran-caret",
+				"r-cran-testthat"
+			]
+		}
+    },
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"maciejdems.add-to-gitignore",
+				"REditorSupport.r",
+				"RDebugger.r-debugger",
+				"Mikhail-Arkhipov.r",
+				"mechatroner.rainbow-csv"
+			]
+		}
+	}
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "uname -a",
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}

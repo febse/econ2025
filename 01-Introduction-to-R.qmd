@@ -1,0 +1,342 @@
+# Introduction to R
+
+During the first classes we discussed the basic structure of an R Markdown document and how we can mix `R` code and text to create documents.
+
+A R Markdown document is a pure text file that you can open in any text editor (e.g. Notepad, Emacs, Kate, etc.). It consists of two parts: the header at the top of the file. The header starts with three dashes on a separate line and ends with three dashes on a separate line. Between the dashes you can specify different options in a `yml` format such as the author and title of the document, but these will be generally irrelevant for our course and we will ignore them.
+
+In the body of the document we write code in code chunks that start with three backticks and end with three backticks. After the first sequence of backticks there is a language identifier which in our case will always be `r`.
+
+It may be easier to work with R Markdown documents in R Studio's `Visual` mode. After opening a R Markdown document, you will find two buttons (`Source` and `Visual`) just below the file name (below the save file icon). Click the `Visual` button to activate it. After that you will be able to click on the `Insert` menu and add code chunks from `Insert` -\> `Code Chunk` -\> `R`.
+
+To run a code chunk, find the green `Run` button on the right side of the chunk and click on it. You will see the printed output of the chunk below it. Note that some chunks do not print any output (e.g. chunks that only contain assignments). 
+
+
+```{r}
+
+```
+
+You can find more information and video tutorials about R Markdown [here](https://rmarkdown.rstudio.com/).
+
+
+:::{.callout-note}
+## Keyboard Shortcuts
+
+A lot of the work in R Studio can be done using keyboard shortcuts. This can speed up your workflow and make you more productive. 
+
+- `Ctrl+Enter`: Run the current line or selection
+- `Ctrl+Shift+Enter`: Run the current chunk
+- `Ctrl+Alt+i`: Insert a new R code chunk
+- `Alt + - (minus)`: Insert the assignment operator `<-`
+
+You can find more shortcuts and a concise overview of the elements of R Studio in the
+[R Studio Cheatsheet](https://posit.co/wp-content/uploads/2022/10/rstudio-ide-1.pdf).
+
+For a complete list of shortcuts, you can go to `Help` -\> `Keyboard Shortcuts Help`.
+:::
+
+
+## Arithmetic Operations
+
+```{r}
+1 + 4
+3 - 2
+2 * 8
+2 / 8
+2^4
+```
+
+## Assignment
+
+Very often we want to store a value in the memory of the computer so that we can reuse it later. In R we store values under *names* (variables) by using the assignment operator \`\<-\` Shortcut for the assignment operator: Alt - (minus)
+
+```{r}
+y <- 34
+y - 40
+```
+
+Run this chunks and look at the global environment (right side of R Studio) to see it appear\
+in the list of objects.
+
+## Numeric Vectors
+
+It is very common to group values that belong together in a single structure. By default numeric vectors in R are created as double precision floating point numbers. You can create a numeric vector using the `c` (concatenate) function.
+
+```{r}
+x <- c(1, 4)
+x
+```
+
+To see the type of a variable, you can use the `typeof` function.
+
+```{r}
+typeof(x)
+```
+
+```{r}
+## Length, average, sum of a numeric vector
+mean(x)
+sum(x)
+length(x)
+```
+
+```{r}
+## Documentation
+# ?mean
+```
+
+Vectors can only hold data of the same type: either numeric, character, or logical. If you try to create a vector with different types of data, R will coerce the data to the same type. For example, if you try to create a vector with a number and a string, R will coerce the number to a string.
+
+```{r}
+c(1, "Hello")
+```
+
+## Character Vectors
+
+You can assign character vectors to variables as well. String literals are enclosed in quotes. It does not matter if you use single or double quotes, but you have to be consistent.
+
+```{r}
+z <- "Hello, world!"
+```
+
+The `c` function can be used to create character vectors as well.
+
+```{r}
+z1 <- c("Hello", "world!")
+z1
+```
+
+Strings can be concatenated using the `paste` function.
+
+```{r}
+paste(z1, collapse = ",")
+```
+
+```{r}
+paste(z1, "some string", sep = " ")
+```
+
+R is different from other programming languages in that it is vectorized. This means that most functions are designed to work with vectors. For example, the `paste` function can take a vector of strings as input and return a vector of strings as output.
+
+Unlike other languages, using `length` on a variable holding a string will not return the number of characters in the string, but the number of elements in the vector. To count the number of characters in a string, you can use the `nchar` function.
+
+```{r}
+length(z)
+```
+
+```{r}
+nchar(z)
+```
+
+As a lot of other function, `nchar` is vectorized, meaning that it can take a vector of strings as input and return a vector of integers as output.
+
+```{r}
+nchar(c("Hi", "world!", "Some longer sentence"))
+```
+
+## Recycling
+
+If you try to perform an operation on two vectors of different lengths, R will recycle the shorter vector to match the length of the longer vector. This is called *recycling* or *broadcasting*.
+
+Let's run an example to see how recycling works. We want to add a scalar to each element of a vector. Mathematically, this does not make sense, because you can only add/subtract element-wise two vectors of the same length. However, R will recycle the scalar to match the length of the vector. Recycling means that it creates a new vector by repeating the shorter vector until it has the same length as the longer vector.
+
+```{r}
+c(2, 5) + 1
+```
+
+```{r}
+c(2, 3, 5, 7) + c(10, 20)
+c(2, 3, 5, 7) / c(10, 20)
+```
+
+Take care when using recycling, because it can lead to unexpected results. For example, if you try to add two vectors of different lengths, R will still recycle the shorter vector to match the length of the longer vector, but it will also issue a warning.
+
+```{r}
+c(1, 2, 10) + c(2, 5)
+```
+
+Pay attention to the warning message. It is telling you that the shorter vector is being recycled to match the length of the longer vector but it cannot expand the shorter vector to match the longer vector exactly. Although this is not an error that will stop your program, most of the time, this is not what you want and is a result from some error before it. You should not rely on recycling vectors of incompatible lengths. Instead, you should be explicit about what you want to do.
+
+
+##  Logical Operators and Logical Values
+
+There are two logical values: `TRUE` and `FALSE`. These emerge from logical operations and indicate whether some condition is fulfilled (`TRUE`) or not `FALSE`. You will find similar constructs in all other languages, where this type of data is commonly known as *boolean* or *binary* (i.e., only two values).
+
+The basic logical operators in `R` are
+
+```{r}
+## Less than
+2 < 5
+## Less than or equal
+2 <= 5
+## Greater than
+2 > 5
+## Greater or equal
+2 >= 5
+## Exactly equal
+2 == 5
+
+"Text 2" == "Text 2"
+```
+
+```{r}
+z == "Text 2"
+```
+:::{.callout-warning}
+
+## Strict Equality and Floating Point Numbers
+
+Strict equality generally makes sense for strings and integers, but not for floating point numbers! This is because real numbers cannot be stored exactly in memory and computers work with finite precision. This can lead to unexpected results when comparing floating point numbers. For example, you may get a result like this:
+
+```{r}
+sqrt(2)^2 == 2
+```
+
+Mathematically, $\sqrt(2)^2$ is exactl yequal to 2, but the comparison in `R` returns `FALSE`.
+
+When printing the number in the console you may not see the difference because the print function formats the number. To compare floating point numbers, you should use the `all.equal` function, which takes into accounts for the finite precision of floating point numbers.
+
+```{r}
+all.equal(sqrt(2)^2, 2)
+```
+
+:::
+
+## Indexing
+
+You can access elements of a vector using the square brackets. The index of the first element is 1, not 0 (this is different from many other programming languages). You can also use negative indices to exclude elements from the vector.
+
+```{r}
+expenses <- c(100, 200, 300, 400, 500)
+expenses[1]
+```
+
+```{r}
+expenses[2:4]
+```
+
+```{r}
+expenses[-1]
+```
+
+You can also use logical vectors to index a vector.
+
+```{r}
+expenses[c(TRUE, FALSE, TRUE, FALSE, TRUE)]
+```
+
+Be careful when using logical vectors to index a vector. If the logical vector is shorter than the vector you are indexing, `R` will recycle the logical vector to match the length of the vector you are indexing.
+
+```{r}
+(1:10)[c(TRUE, FALSE)]
+```
+
+
+## Factors
+
+Factors are used to represent categorical data (e.g., sex: male/femal, employment status: employed, unemployed, retired, etc.). They are stored as integers and have labels associated with them. Factors are important in statistical modeling and are commonly used in plotting functions. Factors are not strings, they are integers with labels.
+
+```{r}
+some_vector <- c("A", "B", "A", "C", "B", "A")
+some_factor <- factor(some_vector)
+some_factor
+
+levels(some_factor)
+```
+
+You can coerce (convert) a factor to an integer vector using the `as.integer` function.
+
+```{r}
+as.integer(some_factor)
+```
+
+You can coerce (convert) as factor to a character vector using the `as.character` function.
+
+```{r}
+as.character(some_factor)
+```
+
+Factors have also some safeguards. If you try to perform an operation that is not defined for factors, R will issue a warning. For example, you cannot meaningfully add a number to a factor. Note that this will only raise a _warning_, not an _error_.
+
+```{r}
+some_factor + 1
+```
+
+
+```{r}
+some_factor[1] <- "Some undefined level"
+some_factor
+```
+
+Read more about factors in the [R documentation](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Factors), as well as the section on factors [here](https://r4ds.hadley.nz/factors)
+
+## Functions
+
+Functions are a fundamental building block most languages, including R. They are used to carry out a specific task and encapsulate a sequence of steps. You can avoid repeating the same code over and over again by abstracting the code into a function.
+
+You can think of a function as a recipe. It takes some ingredients (arguments) and returns a dish (output).
+
+Let's look at some examples of functions in R, without going into too much detail.
+
+To define a function, you use the `function` keyword and assing the function to a variable. The function is then called by using the variable name and passing the arguments in parentheses. The function has a body that is enclosed in curly braces.
+
+Let's write a function that takes two numbers and returns TRUE or FALSE depending on whether the sum of the arguments is odd. Functions return the value of the last expression in the body of the function unless you explicitly use the `return` keyword.
+
+```{r}
+is_even_sum <- function(x, y) {
+  (x + y) %% 2 == 0
+}
+
+is_even_sum(2, 3)
+is_even_sum(2, 4)
+```
+
+The `%%` operator is the modulo operator. It returns the remainder of the division of the first number by the second number.
+
+```{r}
+2 %% 2
+3 %% 2
+```
+
+Writing functions is a large topic and we will not cover all the details in this course. You can find more information about functions in R in the [R documentation](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Functions).
+
+A thing to note is that R is (mostly) a functional programming language and functions generally do not modify their arguments. This means that if you pass a variable to a function and the function modifies that variable, the original value will not be changed. This is different from many other languages, where functions can modify their arguments. The reason for this is that arguments are copied when they are passed to a function. This is done to avoid side effects and make the code easier to reason about.
+
+```{r}
+x <- c(1, 2, 3)
+
+f <- function(y) {
+  y[1] <- 100
+  y
+}
+
+f(x)
+x
+```
+
+The function above assigns a value to the frst element of the vector `y` and returns the modified vector. However, the original vector `x` is not modified, because `y` is a copy of `x`.
+
+
+```{r}
+s1 <- c(4, 1, 2, 3)
+s1
+s1[1] <- 100
+s1
+```
+
+## Data Frames
+
+The data for our course will most often be a table of values with columns representing measurements of different characteristics (variables) and rows representing different observations. The base data structure to store this kind of data in R is the data frame. In this course we will use a structure called `tibble` that is provided by the `dplyr` package, part of the `tidyverse` collection of packages.
+
+You can create a data frame using the `tibble` function. The `tibble` function takes named arguments, where the names are the names of the columns and the values are the vectors that will be the columns of the data frame.
+
+```{r}
+library(tidyverse)
+
+dt <- tibble(
+  name = c("Alice", "Bob", "Charlie"),
+  age = c(25, 30, 35),
+  employed = c(TRUE, FALSE, TRUE)
+)
+
+dt
+```

@@ -1,0 +1,37 @@
+# Homework Assignment (graded) {.unnumbered}
+
+Please find the homework assignment here and register your team
+**by June 7-th, 2024**.
+
+<https://classroom.github.com/a/hRBGoUN_>
+
+0.  In order to access the homework you will need a working GitHub account. If you don't have one, please create a profile with [GitHub](https://github.com/signup). Please use a working email address when opening your account, because you will receive notifications from GitHub related to the grading of the homework.
+
+1.  Click on the assignment invitation link, log in to GitHub and select your student id from the roster. Please email me ([amarov\@feb.uni-sofia.bg](mailto:amarov@feb.uni-sofia.bg)) if you can't find you student id there!
+
+![Find your student id](figures/hw/01-Join-Assignment.png)
+
+2.  The homework is meant to be a group assignment. The team size is limited to three members. The first member of the group can open the assignment and create the team. The rest of the members can select that team when joining. After accepting the assignment, you will see a page with a link to your homework repository.
+
+![Create a team](figures/hw/02-Create-Team.png) ![Join an existing team](figures/hw/02a-Join-Team.png)
+
+![Accept the assignment](figures/hw/03-Accept-Assignment.png)
+
+![Open the repository](figures/hw/05-Open-Repo.png)
+
+```{=html}
+<!-- 3. Now you need to configure your repository to build your homework. This needs to be done only **once**. Open you team repository, find the "Settings" tab (upper right corner) and open it. In the settings page, find the "Pages" tab on the left side and open it.
+
+![Open the repository settings](figures/hw/06-Repo-Settings.png)
+![Open the pages settings](figures/hw/07-Pages-Settings.png)
+
+4. In the "Pages", look at the build and deployment section, click 
+on the "source" dropdown and select `GitHub Actions`
+
+![Selection GitHub Actions](figures/hw/08-Deploy-from-Actions.png)
+
+After this you will see a warning that your repository is private, but your page will be public. Disregard the warning.
+
+![Warning about the repository visibility](figures/hw/09-After-Changing-Deployment.png) -->
+```
+5.  This is it, you repository is now configured and you will receive a notification when your assignment is available. If you have any questions, please email me at [amarov\@feb.uni-sofia.bg](mailto:amarov@feb.uni-sofia.bg).

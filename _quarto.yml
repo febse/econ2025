@@ -1,0 +1,36 @@
+project:
+  type: book
+
+book:
+  title: "Introduction to linear regression analysis"
+  author: "Boyko Amarov"
+  date: "4/11/2023"
+  chapters:
+    - index.qmd
+    - 00-Homework.qmd
+    - 00-Recommended-Literature.qmd
+    - 01-Introduction-to-R.qmd
+    - 02-Descriptive-Statistics.qmd
+    - 03-Least-Squares.qmd
+    - 04a-Discrete-Distributions.qmd
+    - 04b-Continuous-Distributions.qmd
+    - 05-One-Way-ANOVA.qmd
+    - 06-Simulation.qmd
+    - 07-Multiple-Regression.qmd
+    - 08-Interactions.qmd
+    - lecture_problems.qmd
+    # - 00-Homework-Instructions.qmd  
+    # - 02a-Continuous-Distributions.qmd
+    # - 03-Simple-Linear-Model.qmd
+    # - 04-Simple-ANOVA.qmd
+    # - 05-Hypothesis-Testing-and-CI.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+    html-math-method: katex
+
+editor: visual

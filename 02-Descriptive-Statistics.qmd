@@ -1,0 +1,369 @@
+# Descriptive Statistics
+
+## Data Frames (Tibbles)
+
+In most of our work we will use data tables containing variables (columns) that describe characteristics of observations (rows). Most of the time we will use `tibble` objects to hold the data. `tibble` objects are a modern rewrite of the `data.frame` (an older object type for storing data).
+
+To use it we need to load the `dplyr` package, a part of the `tidyverse` collection of packages.
+
+```{r}
+library(tidyverse)
+```
+
+In a limited number of cases we need to construct tables by hand. You can find out more about `tibble` [here](https://tibble.tidyverse.org/articles/tibble.html).
+
+```{r}
+dt <- tibble(
+  ## Shorthand syntax for creating a sequence of integers from one to five
+  id = 1:5,
+  y = c(2, 2.5, 3, 8, 12)
+)
+dt
+```
+
+Most of our data will come from external sources such as text files in a csv format. For the purpose of this course you don't need to worry about reading these files, you will always have a starter code chunk that imports the data.
+
+The `earnings` data set contains data on 1816 customers of a shopping mall. The customers have answered a short interview and gave information about their sex, age, ethnicity, annual income, weight and height.
+
+We will use this data set to demonstrate some common operations and basic data summaries.
+
+```{r}
+earnings <- read_csv("https://raw.githubusercontent.com/febse/data/main/econ/earnings.csv")
+```
+
+-   *height* (numeric): Height in inches (1 inch = 2.54 cm)
+-   *weight* (numeric): Weight in pounds (1 pound $\approx$ 0.45 kilograms)
+-   *male* (numeric): 1: Male, 0: Female
+-   *earn* (numeric): Annual income in USD
+-   *earnk* (numeric): Annual income in 1,000 USD
+-   *ethnicity* (character): Ethnicity
+-   *age* (numeric): Age
+
+First we will convert the height and weight measurements from their original scales (inch, pound) to cm and kg. We will create two new columns with informative names using the `mutate` function.
+
+```{r}
+earnings <- mutate(
+  earnings,
+  height_cm = 2.54 * height,
+  weight_kg = 0.45 * weight
+)
+earnings1 <- select(earnings, height_cm, weight_kg)
+```
+
+The same code can be rewritten in a more convenient way using [pipes](https://r4ds.had.co.nz/pipes.html).
+
+```{r}
+earnings1 <- earnings %>%
+  mutate(
+    height_cm = 2.54 * height,
+    weight_kg = 0.45 * weight
+  ) %>%
+  select(height_cm, weight_kg)
+```
+
+Note that the object holding the original data is unaffected by mutate and select. The reason for this is that functions in R generally do not change their arguments. If you want to add the two new columns to the original data set `earnings`, you need to overwrite it with an assignment.
+
+## Basic data summaries
+
+The first step in any data analysis is to gain an initial understanding of the context of the data and the distributions of the variables of interest. In this course our main focus will be on two features of the variables: their location and their variability (how different are the observations between each other).
+
+### Location
+
+The most important measure of location for us will be the empirical mean of a variable (arithmetic average). Let $i$ index the observation in our data set from the first ($i = 1$) to the last $i = n$. In our case $n = 1816$: the number of all interviewed customers. We can represent the values of some (numeric) characteristic (e.g., the persons' weight) as a vector of values $x = (x_1, \ldots, x_n)$. In this notation $x_1$ is the weight of the first customer in the data set ($x_1 = 210$ pounds). The arithmetic average is defined as the sum of all values divided by the number of observations:
+
+$$
+\bar{x} = \frac{1}{n}(x_1 + x_2 + \ldots + x_n) = \frac{1}{n}\sum_{i = 1}^{n} x_i
+$$
+
+Let us now compute the arithmetic average of `weight` and `height`. One way to access the columns of the data set `earnings` is to write the name of the data set and then after a \$ sign the name of the column.
+
+```{r}
+mean(earnings$height)
+mean(earnings$weight, na.rm = TRUE)
+```
+
+Another measure of location is the (empirical) median. You can compute it using the `median` function.
+
+```{r}
+median(earnings$height)
+```
+
+The result is a median height of 66 inches. This means that about half of the customers were taller than 66 inches.
+
+### Variability (Spread)
+
+The next important feature of the data is its variability. It answers the following question: how different are the customers between each other with respect to body height (for example). There are numerous ways to measure variability.
+
+One intuitive measure would be the range of the data, defined as the difference by the maximal observed height and the minimal observed height
+
+```{r}
+min(earnings$height)
+max(earnings$height)
+
+range(earnings$height)
+```
+
+```{r}
+max(earnings$height) - min(earnings$height)
+```
+
+Another measure is the inter-quartile range. The quartiles are defined similar to the median. To see this lets use the example of body height. The first quartile of height (25-th percentile and 0.25 quantile are different names for the same thing) is the height for which about one quarter of the customers are shorter than it. You can compute it with the function `quantile`.
+
+```{r}
+quantile(earnings$height, 0.25)
+```
+
+About 25 percent of our customers were shorter than 64 inches.
+
+The second quartile is the same as the median (two quarters).
+
+```{r}
+quantile(earnings$height, 0.5)
+median(earnings$height)
+```
+
+The third quartile is the height for which three quarter of the customers are shorter than it.
+
+```{r}
+quantile(earnings$height, 0.75)
+```
+
+In our case about three quarter of the customers were shorter than 69.25 inches.
+
+The inter-quartile range is simply the difference between the third quartile and the second quartile.
+
+```{r}
+quantile(earnings$height, 0.75) - quantile(earnings$height, 0.25)
+```
+
+About half of our customers had a hight between the first quartile (64 inches) and the third quartile (69.25 inches). The inter-quartile range shows you the difference between the height of the talles person and the shortest person for the central 50 percent of the customers.
+
+As the range, the inter-quartile range is a measure of variability.
+
+The most important measure of variability and the one that will be central to our analysis is the (empirical) variance.
+
+::: {#def-empirical-variance}
+## Empirical Variance
+
+For a vector of values $x = (x_1, \ldots, x_n)$ it is defined as the average (apart from a small correction in the denominator) squared deviation of the values from their mean.
+
+$$
+S^2_x = \frac{(x_1 - \bar{x})^2 + \ldots + (x_n - \bar{x})^2}{n - 1} = \frac{1}{n - 1} \sum_{i = 1}^{n}(x_i - \bar{x})^2: \quad \text{variance}\\
+S_x = \sqrt{S^2_x} \quad \text{standard deviation}
+$$
+:::
+
+::: {#exm-empirical-variance}
+## Computing the empirical variance
+
+Lets apply the formula from @def-empirical-variance to a very simple example with just three values.
+
+$$
+x_1 = -1, x_2 = 0, x_3 = 4
+$$
+
+First, the empirical mean of these values is
+
+$$
+\bar{x} = \frac{-1 + 0 + 4}{3} = 1
+$$
+
+Now lets substitute these values in the definition of the empirical variance:
+
+$$
+\begin{aligned}
+S^2_{x} & = \frac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + (x_3 - \bar{x})^2 }{n - 1} \\
+        & = \frac{(-1 - 1)^2 + (0 - 1)^2 + (4 - 1)^2 }{3 - 1} \\
+        & = \frac{(-2)^2 + (- 1)^2 + (3 )^2 }{2} \\
+        & = \frac{4 + 1 + 9 }{2} \\
+        & = \frac{14}{2} \\
+        & = 7
+\end{aligned}
+$$
+
+Using R to compute the same thing:
+
+```{r}
+# Create a vector called x
+x <- c(-1, 0, 4)
+# Compute the average of the values in x and store it in a variable called x_avg (look it up in the global environment)
+
+x_avg <- mean(x)
+
+# Manually compute the variance of x
+((-1 - x_avg)^2 + (0 - x_avg)^2 + (4 - x_avg)^2) / (length(x) - 1)
+```
+
+There is also a special function `var` that can compute it from a vector
+
+```{r}
+var(x)
+```
+
+The (empirical) standard deviation is simply the square root of the (empirical) variance.
+
+$$
+S_x = \sqrt{S^2_x} = \sqrt{7} \approx 2.64 
+$$
+
+In R you have two options: take the square root of the result of `var` using the `sqrt` function or use `sd` (standard deviation) to compute the standard deviation directly.
+
+```{r}
+sqrt(var(x))
+sd(x)
+```
+:::
+
+
+:::{#exr-empirical-moments}
+## Empirical Moments (Mean and Variance)
+
+1. Compute the sample mean and variance of the annual earnings of the customers in the `earnings` data set. First, compute it by accessing the columns of the data using the dollar syntax. 
+
+```{r}
+
+```
+
+
+2. Then use the `summarize` function from the `dplyr` (already loaded) package to compute the mean and the variance of the `earn` variable.
+
+```{r}
+
+```
+
+3. Run the same calculations as before, but this time group the dataset by the `ethnicity` variable. This will give you the mean and the variance of the annual earnings for every ethnic group in the data set. Use the `group_by` function.
+
+```{r}
+
+```
+
+:::
+
+
+### Overview of the data
+
+The `skim` function from the `skimr` package provides a quick overview of the data set. It shows the number of observations, the number of variables, the names of the variables, the type of the variables, the number of missing values, the mean, the standard deviation, the minimum and maximum values, and the quartiles for the numeric variables.
+
+```{r}
+## Basic summaries for the whole tibble
+earnings %>% skimr::skim()
+```
+
+### Summarizing a single categorical variable
+
+While the mean, median, and variance are useful for numeric variables, they are not defined for categorical variables. Instead, we can use the `table` function to count the number of observations in each category.
+
+```{r}
+table(earnings$ethnicity)
+```
+
+## Visualizations
+
+Histogram
+
+```{r}
+earnings %>%
+  ggplot(aes(x = height)) +
+  geom_histogram()
+```
+
+A smooth density plot is an alternative way to visualize the distribution of a variable.
+
+```{r}
+earnings %>%
+  ggplot(aes(x = height)) +
+  geom_density()
+```
+
+The boxplot shows the median and the 25-th and 75-th percentiles (the box). The whiskers in the plot stretch to the minimum or the maximum observed value, unless there are extreme observations that are shown as single dots.
+
+```{r}
+earnings %>%
+  ggplot(aes(x = height)) +
+  geom_boxplot()
+```
+
+Group comparisons
+
+```{r}
+earnings %>%
+  ggplot(aes(x = height, y = ethnicity)) +
+  geom_boxplot()
+```
+
+The scatterplot will be our primary tool in studying associations between variables. It represents each observation as a point in a coordinate system defined by the variables that we would like to study.
+
+```{r}
+earnings1 %>%
+  ggplot(aes(x = weight_kg, y = height_cm)) +
+  geom_point(position = "jitter", alpha = 0.5) +
+  labs(
+    x = "Weight (kg)",
+    y = "Height (cm)"
+  )
+```
+
+```{r}
+library(plotly)
+
+# Create a scatterplot
+fig <- plot_ly(earnings1, x = ~weight_kg, y = ~height_cm, mode = 'markers')
+fig
+```
+
+
+```{r}
+summary(lm(height_cm ~ weight_kg, data = earnings1))
+```
+
+:::{#exr-visualizations}
+
+1. Create a new variable `bmi` (body mass index) in the `earnings` data set. The BMI is defined as the weight in kilograms divided by the square of the height in meters. The height in meters is the height in centimeters divided by 100.
+
+```{r}
+earnings <- earnings %>%
+  mutate(
+    bmi = weight_kg / (height_cm / 100)^2
+  )
+```
+
+
+2. The reference ranges for the BMI are as follows:
+
+- Under 18,5: Underweight
+- 18,5 - 24,9: Normal
+- 25 - 29,9: Overweight
+- 30 oder mehr: Obese
+
+Create a two new variables `is_underweight`, `is_normal` in the dataset. *Hint*: Use the `mutate` function and the `<`, `<=`, `>`, `>=` operators. You can join multiple conditions using the `&` (logical and) operator. Don't forget to uncommend the code first (Ctrl+Shift+C). How many customers are underweight and how many have a normal weight? Use the `summarize` function to compute the number of customers in each category.
+
+```{r}
+earnings <- earnings %>%
+  mutate(
+    is_underweight = bmi < 18.5,
+    is_normal = bmi >= 18.5 & bmi <= 24.9
+  )
+
+earnings %>%
+  summarize(
+    n_underweight = sum(is_underweight, na.rm = TRUE),
+    n_normal = sum(is_normal, na.rm = TRUE)
+  )
+```
+
+:::
+
+3. Group the data by `male` and compute the number of customers in each group, as well as the number of underweight and normal weight customers in each group. Additionally, compute the share of underweight and normal weight customers in each group. *Hint*: Use the `group_by` function and the `summarize` function. Don't forget to uncommend the code first (Ctrl+Shift+C). The `n()` function can be used to compute the number of observations in each group.
+
+```{r}
+earnings %>%
+  group_by(male) %>%
+  summarize(
+    # Count the number of customers in each group
+    n = n(),
+    n_underweight = sum(is_underweight, na.rm = TRUE),
+    n_normal = sum(is_normal, na.rm = TRUE),
+    share_underweight = mean(is_underweight, na.rm = TRUE),
+    share_normal = mean(is_normal, na.rm = TRUE)
+  )
+```
