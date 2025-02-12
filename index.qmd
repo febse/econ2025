@@ -1,20 +1,18 @@
 # General Information {.unnumbered}
 
-:::{.callout-note}
+::: callout-note
 ## Website URL
 
-<span style="font-size:2em">[https://febse.github.io/econ2024/](https://febse.github.io/econ2024/)</span>
+[{{< var url >}}]({{< var url >}}){style="font-size:2em"}
 
 ![](figures/qrcode.png)
-
 :::
-
 
 ## Schedule
 
-1.  Tue 10:15-11:45 in room 303
-2.  Tue 12:15-13:45 in room 303
-3.  Tue 14:15-15:45 in room 303
+1.  Mon 8:30-10:00 in room 308
+2.  Mon 16:15-17:45 in room 302
+3.  Thu 12:15-13:45 in room 308
 
 ## Grading
 
@@ -24,7 +22,7 @@ TBA
 
 All course materials for the exercise classes will be available in the GitHub repository:
 
-<https://github.com/febse/econ2024>
+[{{< var github >}}]({{< var github >}})
 
 ## Software Setup
 
@@ -54,7 +52,7 @@ The exercise classes require a minimal software setup:
 
 ![Open a new project.](figures/RStudio_new_project_1.png) ![Select version control](figures/RStudio_new_project_2.png) ![Select git](figures/RStudio_new_project_3.png)
 
-In the Repository URL field, paste the address of the course repository:
+In the Repository URL field, paste the address of the course repository (the one in the screenshot is outdated):1
 
 ::: callout-caution
 ## Repository URL
@@ -62,7 +60,7 @@ In the Repository URL field, paste the address of the course repository:
 Insert the following address in the Repository URL field:
 
 ```         
-https://github.com/febse/econ2024.git
+{{< var githubHttps >}}
 ```
 
 the one shown in the screenshot is outdated.
@@ -70,18 +68,16 @@ the one shown in the screenshot is outdated.
 
 ![Paste the git repository address](figures/RStudio_new_project_4.png) Click on the Create Project button and wait for git R studio to clone the repository and open the project.
 
-:::{.callout-caution}
+::: callout-caution
 ## Renv
 
-To install the packages necessary for the course, click on the command line
-in the R console and type:
+To install the packages necessary for the course, click on the command line in the R console and type:
 
-```r
+``` r
 renv::restore()
 ```
 
-This will trigger the download and installation of all the dependencies. 
-It can take some time, so be patient. You only need to do it once for the project,
+This will trigger the download and installation of all the dependencies. It can take some time, so be patient. You only need to do it once for the project,
 :::
 
 ![Step 5](figures/RStudio_new_project_renv.png)
@@ -98,15 +94,13 @@ To avoid this, you can roll back the file to its original state. Right-click on 
 
 ![Revert](figures/RStudio_new_project_revert.png)
 
-9. In the exercise classes, we will use many functions from the `tidyverse` system and several other packages. Before accessing these packages' functionality, you need to install them first. Find the R console in R studio and paste the following line on the command line. Press enter to run it and wait for the installation to complete. The `renv` package will take care of the installation of the packages in a separate environment, so you should't worry about installing packages.
+9.  In the exercise classes, we will use many functions from the `tidyverse` system and several other packages. Before accessing these packages' functionality, you need to install them first. Find the R console in R studio and paste the following line on the command line. Press enter to run it and wait for the installation to complete. The `renv` package will take care of the installation of the packages in a separate environment, so you should't worry about installing packages.
 
 In case it does not work, you can install the packages manually by running the following command in the R console:
 
-```r
+``` r
 install.packages(c("tidyverse", "broom", "patchwork", "GGally", "caret", "plotly"))
 ```
-
-
 
 Optional: more on Quarto: <https://quarto.org/docs/guide/>
 

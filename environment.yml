@@ -1,0 +1,17 @@
+name: econ2025
+channels:
+  - defaults
+dependencies:
+  - jupyter
+  - matplotlib
+  - notebook
+  - numpy
+  - pandas
+  - python=3.11
+  - qrcode
+  - scikit-learn
+  - scipy
+  - seaborn
+  - statsmodels
+  - yaml
+prefix: /home/amarov/anaconda3/envs/econ2025
