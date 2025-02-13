@@ -1,22 +1,17 @@
+# Recommended Reading {.unnumbered}
 
-# Recommended reading {.unnumbered}
+1.  The [R for data science](https://r4ds.hadley.nz/) [@WICKHAM2023DataScienceImport] book covers data management and exploration using the tools from the `tidyverse` packages.
 
-1. The [R for data science](https://r4ds.hadley.nz/) [@WICKHAM2023DataScienceImport] book covers data management and exploration using the tools from the `tidyverse` packages.
+2.  @DALGAARD2008IntroductoryStatistics: Introductory statistics with R. 2nd edition. New York: Springer. This textbook offers an introductory level to probability and basic linear models with a focus on the software (R) and with only a minimal discussion of the mathematical fundamentals. The code shown is base R and mostly differs from what we are using in the classes (`tidyverse`).
 
-2. @DALGAARD2008IntroductoryStatistics: Introductory statistics with R. 2nd edition. New York: Springer.
- This textbook offers an introductory level to probability and basic linear models with a focus on the software (R) and with only a minimal discussion of the mathematical fundamentals. The code shown is base R and mostly differs from what we are using in the classes (`tidyverse`).
+3.  @SHEATHER2009ModernApproachRegression: A Modern Approach to Regression with R. New York, NY: Springer New York (Springer Texts in Statistics). Available at: https://doi.org/10.1007/978-0-387-09608-7.
 
-3. @SHEATHER2009ModernApproachRegression: A Modern Approach to Regression with R. New York, NY: Springer New York (Springer Texts in Statistics). Available at: https://doi.org/10.1007/978-0-387-09608-7.
-    
-    The Textbook focuses on linear regression models and develops the mathematical fundamentals alongside with examples
-    using R.
+    The Textbook focuses on linear regression models and develops the mathematical fundamentals alongside with examples using R.
 
-4. @GELMAN2021RegressionOtherStories: Regression and other stories. Cambridge New York, NY Port Melbourne, VIC New Delhi Singapore: Cambridge University Press (Analytical methods for social research). Available at: https://doi.org/10.1017/9781139161879.
+4.  @GELMAN2021RegressionOtherStories: Regression and other stories. Cambridge New York, NY Port Melbourne, VIC New Delhi Singapore: Cambridge University Press (Analytical methods for social research). Available at: https://doi.org/10.1017/9781139161879.
 
     Another introduction into basic probability theory and linear models. The references to Bayesian inference in the book are not relevant to our course.
 
-5. @FARAWAY2015LinearModels: Linear models with R. Second edition. Boca Raton: CRC Press, Taylor & Francis Group.
-    
-    Another introduction into linear models with examples in R.
+5.  @FARAWAY2015LinearModels: Linear models with R. Second edition. Boca Raton: CRC Press, Taylor & Francis Group.
 
- 
+    Another introduction into linear models with examples in R.
