@@ -99,7 +99,7 @@ To avoid this, you can roll back the file to its original state. Right-click on 
 In case it does not work, you can install the packages manually by running the following command in the R console:
 
 ``` r
-install.packages(c("tidyverse", "broom", "patchwork", "GGally", "caret", "plotly", "rmarkdown"))
+install.packages(c("tidyverse", "broom", "patchwork", "GGally", "caret", "plotly", "rmarkdown", "car", "MASS", "skimr"))
 ```
 
 Optional: more on Quarto: <https://quarto.org/docs/guide/>
