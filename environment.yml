@@ -12,4 +12,5 @@ dependencies:
   - conda-forge::r-plotly
   - conda-forge::r-renv
   - conda-forge::r-car
+  - conda-forge::r-skimr
 prefix: /home/amarov/miniconda3/envs/econ2025
