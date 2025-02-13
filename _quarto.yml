@@ -3,7 +3,7 @@ project:
   output-dir: _site
 
 book:
-  title: "Introduction to linear regression analysis"
+  title: "Introduction to Linear Regression Analysis"
   author: "Boyko Amarov"
   date: last-modified
   chapters:
