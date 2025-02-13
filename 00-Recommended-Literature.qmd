@@ -2,7 +2,7 @@
 
 <https://tinyurl.com/jjdb5vzd>
 
-1.  @WEISBERG2014AppliedLinearRegression is a classic text on linear regression models. It is best used together with its R companion [@FOX2019CompanionAppliedRegression].
+1.  @WEISBERG2014AppliedLinearRegression is a classic text on linear regression models. It is best used together with its R companion book: @FOX2019CompanionAppliedRegression.
 
 2.  The [R for data science](https://r4ds.hadley.nz/) [@WICKHAM2023DataScienceImport] book covers data management and exploration using the tools from the `tidyverse` packages.
 
