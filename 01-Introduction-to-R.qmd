@@ -11,7 +11,11 @@ It may be easier to work with R Markdown documents in R Studio's `Visual` mode. 
 To run a code chunk, find the green `Run` button on the top right side of the chunk and click on it. You will see the printed output of the chunk below it. Note that some chunks do not print any output (e.g. chunks that only contain assignments).
 
 ```{r}
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
 
+library(tidyverse)
 ```
 
 You can find more information and video tutorials about R Markdown [here](https://rmarkdown.rstudio.com/).
@@ -57,13 +61,11 @@ in the list of objects.
 ## Arithmetic Operations
 
 Create two new variables called `x1` and `x2` and assign them the values 3 and 4, respectively. Then create a new variable called `y` and assign it the value of the sum of `x1` and `x2`. Print the value of `y` to the console either by placing the variable name in the last line of the code chunk or by using the `print` function.
-
 :::
 
 ```{r}
 
 ```
-
 
 ## Numeric Vectors
 
@@ -91,15 +93,12 @@ Vectors can only hold data of the same type: either numeric, character, or logic
 ::: {#exr-r-vector-arithmetic}
 ## Vector Assignment
 
-Create a new variable called `incomes` and assign it the values 100, 200, 300, 400, 500 (you can just copy these values from here and paste them in the code chunk). Remember to use the `c` function to pack the values into a vector. 
+Create a new variable called `incomes` and assign it the values 100, 200, 300, 400, 500 (you can just copy these values from here and paste them in the code chunk). Remember to use the `c` function to pack the values into a vector.
 
-- Compute the average income and the total income and
-store them into the variables `income_avg` and `income_total`, respectively. Use the `mean` and `sum` functions to calculate the values.
-- Subtract the average income from each element of the vector and store the result in a new variable called `income_diff`. Print the result to the console.
-- Compute the average of the new vector `income_diff`. Is the result surprising?
-
+-   Compute the average income and the total income and store them into the variables `income_avg` and `income_total`, respectively. Use the `mean` and `sum` functions to calculate the values.
+-   Subtract the average income from each element of the vector and store the result in a new variable called `income_diff`. Print the result to the console.
+-   Compute the average of the new vector `income_diff`. Is the result surprising?
 :::
-
 
 ## Character Vectors
 
@@ -110,12 +109,10 @@ z1 <- "Hello World"
 z <- c("Alpha", "Bravo", "Charlie", "Delta", "Echo")
 ```
 
-:::{.callout-warning}
+::: callout-warning
 ## Case Sensitivity
 
-R is a case-sensitive language. This means that `Hello` and `hello` are two completely different strings. This also applies to function names. For example, `mean` and `Mean` are two different functions in R. Uncomment (remove the # character from the beginning of the second line)
-and run the following code chunk to see the error message that R will produce.
-
+R is a case-sensitive language. This means that `Hello` and `hello` are two completely different strings. This also applies to function names. For example, `mean` and `Mean` are two different functions in R. Uncomment (remove the \# character from the beginning of the second line) and run the following code chunk to see the error message that R will produce.
 :::
 
 ```{r}
@@ -123,13 +120,9 @@ mean(x)
 # Mean(x)
 ```
 
-
 ## Recycling
 
-As you have already noticed in @exr-r-vector-arithmetic, R is a vectorized language. This means that most operations are performed element-wise on vectors. In most situations this
-is a convenient feature, because it allows you to write concise and readable code. However, 
-you should be aware of how R handles operations on vectors of different lengths.
-If you try to perform an operation on two vectors of different lengths, R will recycle the shorter vector to match the length of the longer vector. This is called *recycling* or *broadcasting*.
+As you have already noticed in @exr-r-vector-arithmetic, R is a vectorized language. This means that most operations are performed element-wise on vectors. In most situations this is a convenient feature, because it allows you to write concise and readable code. However, you should be aware of how R handles operations on vectors of different lengths. If you try to perform an operation on two vectors of different lengths, R will recycle the shorter vector to match the length of the longer vector. This is called *recycling* or *broadcasting*.
 
 Let's run an example to see how recycling works. We want to add a scalar to each element of a vector. Mathematically, this does not make sense, because you can only add/subtract element-wise two vectors of the same length. However, R will recycle the scalar to match the length of the vector. Recycling means that it creates a new vector by repeating the shorter vector until it has the same length as the longer vector.
 
@@ -174,6 +167,7 @@ The basic logical operators in `R` are
 ```{r}
 c(1, 2, 3, 4) == 2
 ```
+
 ```{r}
 c(1, 2, 3, 4) > 2
 ```
@@ -185,12 +179,14 @@ c(1, 2, 3, 4) < 2
 ```{r}
 c(1, 2, 3, 4) <= 2
 ```
+
 ```{r}
 c(1, 2, 3, 4) >= 2
 ```
 
 ```{r}
-z == "Text 2"
+some_char_vector <- c("India", "Foxtrot", "Golf", "Hotel", "India")
+some_char_vector == "India"
 ```
 
 ::: callout-warning
@@ -211,18 +207,15 @@ all.equal(sqrt(2)^2, 2)
 ```
 :::
 
-:::{#exr-r-logical-operators}
+::: {#exr-r-logical-operators}
 ## Logical Operators and Logical Values
 
-Use the `incomes` vector from the previous exercise. Create a new vector called `high_income` that holds the logical values of whether the income is greater than the average. Count
-the number of elements with high income and find the proportion of high incomes.
-
+Use the `incomes` vector from the previous exercise. Create a new vector called `high_income` that holds the logical values of whether the income is greater than the average. Count the number of elements with high income and find the proportion of high incomes.
 :::
 
 ```{r}
 
 ```
-
 
 ## Indexing
 
@@ -247,11 +240,10 @@ You can also use logical vectors to index a vector.
 expenses[c(TRUE, FALSE, TRUE, FALSE, TRUE)]
 ```
 
-:::{#exr-r-indexing}
+::: {#exr-r-indexing}
 ## Indexing
 
 Use the `incomes` vector from the previous exercise. Create a new vector called `low_income` that holds the logical values of whether the income is less than the average. Select the last element of the new vector and print it to the console (Hint: use the `length` function to count the number of elements in this vector).
-
 :::
 
 ```{r}
@@ -262,26 +254,20 @@ Use the `incomes` vector from the previous exercise. Create a new vector called 
 
 We will use the example to introduce [pipes](https://r4ds.had.co.nz/pipes.html).
 
-You can think about the `pipe` operator as the word "then". For example, 
-in human language the following would be the sentence.
+You can think about the `pipe` operator as the word "then". For example, in human language the following would be the sentence.
 
 Take the data in `x` and **then** (pipe) apply the mean function.
-
-```{r}
-library(tidyverse)
-```
 
 ```{r}
 x <- c(-1, 1, 1)
 x %>% mean()
 ```
 
-This makes the code more readable and easier to understand. The pipe operator is `%>%` in R (you may also encounter |>). The following will read as:
+This makes the code more readable and easier to understand. The pipe operator is `%>%` in R (you may also encounter \|\>). The following will read as:
 
-Take the values in `x`, then (pipe) pass them to the `mean` function, then (pipe) take the result
-of the `mean` funciton and pass it to the `abs` function (calculates the absolute value), then (pipe) pass the result from `abs` to the `sqrt` function (calculates the square root), then (pipe) round the result to two decimal places (`round`).
+Take the values in `x`, then (pipe) pass them to the `mean` function, then (pipe) take the result of the `mean` funciton and pass it to the `abs` function (calculates the absolute value), then (pipe) pass the result from `abs` to the `sqrt` function (calculates the square root), then (pipe) round the result to two decimal places (`round`).
 
-:::{.callout-info}
+::: callout-info
 ## Shortcut for the Pipe Operator
 
 You can use the keyboard shortcut `Ctrl + Shift + M` to insert the pipe operator in R Studio.
@@ -300,7 +286,6 @@ This is a lot nicer and easier to read than the equivalent
 ```{r}
 round(sqrt(abs(mean(x))), 2)
 ```
-
 
 ## Factors (optional)
 
@@ -338,7 +323,6 @@ some_factor
 ```
 
 Read more about factors in the [R documentation](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Factors), as well as the section on factors [here](https://r4ds.hadley.nz/factors)
-
 
 ## Functions (optional)
 

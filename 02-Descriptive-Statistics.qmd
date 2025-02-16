@@ -7,6 +7,10 @@ In most of our work we will use data tables containing variables (columns) that 
 To use it we need to load the `dplyr` package, a part of the `tidyverse` collection of packages.
 
 ```{r}
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
+
 library(tidyverse)
 ```
 
@@ -54,14 +58,13 @@ earnings1 <- earnings %>%
 
 Note that the object holding the original data is unaffected by mutate and select. The reason for this is that functions in R generally do not change their arguments. If you want to add the two new columns to the original data set `earnings`, you need to overwrite it with an assignment.
 
-:::{#exr-r-tibbles}
+::: {#exr-r-tibbles}
 ## Mutate
 
 Create a two new columns in the `earnings` dataset:
 
-- The first one should be called `earn_eur` and should contain the annual income
-in EUR (take 1 EUR  = 1.05 USD as the exchange rate). 
-- The second one should be called `earnk_eur` and should contain the annual income in 1,000 EUR.
+-   The first one should be called `earn_eur` and should contain the annual income in EUR (take 1 EUR = 1.05 USD as the exchange rate).
+-   The second one should be called `earnk_eur` and should contain the annual income in 1,000 EUR.
 :::
 
 ## Basic Data Summaries
@@ -235,7 +238,6 @@ sd(x)
 ```{r}
 
 ```
-
 :::
 
 ### Data Overview
@@ -305,24 +307,20 @@ earnings1 %>%
   )
 ```
 
-
 ```{r}
 summary(lm(height_cm ~ weight_kg, data = earnings1))
 ```
 
 ::: {#exr-visualizations}
-
 1.  Create a new variable `bmi` (body mass index) in the `earnings` data set. The BMI is defined as the weight in kilograms divided by the square of the height in meters. The height in meters is the height in centimeters divided by 100.
 
 $$
 \text{BMI} = \frac{\text{weight (kg)}}{(\text{height (cm)} / 100)^2}
 $$
 
-
 ```{r}
 
 ```
-
 
 2.  The reference ranges for the BMI are as follows:
 
@@ -332,8 +330,6 @@ $$
 -   30 oder mehr: Obese
 
 Create two new variables `is_underweight`, `is_normal` in the dataset. *Hint*: Use the `mutate` function and the `<`, `<=`, `>`, `>=` operators. You can join multiple conditions using the `&` (logical and) operator. Don't forget to uncommend the code first (Ctrl+Shift+C). How many customers are underweight and how many have a normal weight? Use the `summarize` function to compute the number of customers in each category.
-
-
 
 ```{r}
 
