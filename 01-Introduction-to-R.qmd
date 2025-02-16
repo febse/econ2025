@@ -28,7 +28,6 @@ A lot of the work in R Studio can be done using keyboard shortcuts. This can spe
 -   `Ctrl+Enter`: Run the current line or selection
 -   `Ctrl+Shift+Enter`: Run the current chunk
 -   `Ctrl+Alt+i`: Insert a new R code chunk
--   `Alt + - (minus)`: Insert the assignment operator `<-`
 
 You can find more shortcuts and a concise overview of the elements of R Studio in the [R Studio Cheatsheet](https://posit.co/wp-content/uploads/2022/10/rstudio-ide-1.pdf).
 
@@ -64,6 +63,7 @@ Create two new variables called `x1` and `x2` and assign them the values 3 and 4
 :::
 
 ```{r}
+# Write you code here
 
 ```
 
@@ -214,6 +214,7 @@ Use the `incomes` vector from the previous exercise. Create a new vector called 
 :::
 
 ```{r}
+# Write you code here
 
 ```
 
@@ -247,6 +248,7 @@ Use the `incomes` vector from the previous exercise. Create a new vector called 
 :::
 
 ```{r}
+# Write you code here
 
 ```
 
@@ -285,6 +287,27 @@ This is a lot nicer and easier to read than the equivalent
 
 ```{r}
 round(sqrt(abs(mean(x))), 2)
+```
+
+:::{#exr-r-pipes}
+## Pipes
+
+Compute the square root of the numbers 2 and three, then take the (natural) logarithm of the result and round it to three decimal places. Compute the result 
+
+1. Using nested function calls
+2. Using the pipe operator
+
+
+*Hint*: use the functions `sqrt`, `log`, and `round`. 
+
+$$
+\log{\sqrt{2}} \quad \text{and} \quad \log{\sqrt{3}}
+$$
+:::
+
+```{r}
+# Write your code here
+
 ```
 
 ## Factors (optional)
