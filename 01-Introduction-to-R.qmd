@@ -46,12 +46,23 @@ For a complete list of shortcuts, you can go to `Help` -\> `Keyboard Shortcuts H
 
 ## Assignment
 
-Very often we want to store a value in the memory of the computer so that we can reuse it later. In R we store values under *names* (variables) by using the assignment operator \`\<-\` Shortcut for the assignment operator: Alt - (minus)
+Very often we want to store a value in the memory of the computer so that we can reuse it later. In R we store values under *names* (variables) by using the assignment operator \`\<-\` Shortcut for the assignment operator:
+
+:::{.callout-warning}
+## Assignment Operator Shortcut
+
+You can insert the whole `<-` operator by pressing `Alt -` (minus). It is important to note 
+that `<-` and `< -` (with space between the characters) do completely different things (see below).
+:::
 
 ```{r}
 y <- 34
 y - 40
 ```
+```{r}
+y < - 34
+```
+
 
 Run this chunks and look at the global environment (right side of R Studio) to see it appear\
 in the list of objects.
