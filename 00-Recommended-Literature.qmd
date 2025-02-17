@@ -1,6 +1,6 @@
 # Recommended Reading {.unnumbered}
 
-<https://tinyurl.com/jjdb5vzd>
+<https://tinyurl.com/5efmj3dh>
 
 1.  @WEISBERG2014AppliedLinearRegression is a classic text on linear regression models. It is best used together with its R companion book: @FOX2019CompanionAppliedRegression.
 
