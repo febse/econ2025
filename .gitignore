@@ -1,5 +1,6 @@
 .quarto/
 /_book/
+_site/
 .conda/
 .ipython/
 .jupyter/

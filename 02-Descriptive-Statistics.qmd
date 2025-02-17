@@ -7,6 +7,10 @@ In most of our work we will use data tables containing variables (columns) that 
 To use it we need to load the `dplyr` package, a part of the `tidyverse` collection of packages.
 
 ```{r}
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
+
 library(tidyverse)
 ```
 
@@ -16,20 +20,15 @@ In a limited number of cases we need to construct tables by hand. You can find o
 dt <- tibble(
   ## Shorthand syntax for creating a sequence of integers from one to five
   id = 1:5,
-  y = c(2, 2.5, 3, 8, 12)
+  name = c("Alice", "Bob", "Charlie", "David", "Eve"),
+  billableHours = c(2, 2.5, 3, 8, 12)
 )
 dt
 ```
 
-Most of our data will come from external sources such as text files in a csv format. For the purpose of this course you don't need to worry about reading these files, you will always have a starter code chunk that imports the data.
+Most of our data will come from external sources such as text files in a CSV format. For the purpose of this course you don't need to worry about reading these files, you will always have a starter code chunk that imports the data.
 
 The `earnings` data set contains data on 1816 customers of a shopping mall. The customers have answered a short interview and gave information about their sex, age, ethnicity, annual income, weight and height.
-
-We will use this data set to demonstrate some common operations and basic data summaries.
-
-```{r}
-earnings <- read_csv("https://raw.githubusercontent.com/febse/data/main/econ/earnings.csv")
-```
 
 -   *height* (numeric): Height in inches (1 inch = 2.54 cm)
 -   *weight* (numeric): Weight in pounds (1 pound $\approx$ 0.45 kilograms)
@@ -39,18 +38,14 @@ earnings <- read_csv("https://raw.githubusercontent.com/febse/data/main/econ/ear
 -   *ethnicity* (character): Ethnicity
 -   *age* (numeric): Age
 
-First we will convert the height and weight measurements from their original scales (inch, pound) to cm and kg. We will create two new columns with informative names using the `mutate` function.
+We will use this data set to demonstrate some common operations and basic data summaries.
 
 ```{r}
-earnings <- mutate(
-  earnings,
-  height_cm = 2.54 * height,
-  weight_kg = 0.45 * weight
-)
-earnings1 <- select(earnings, height_cm, weight_kg)
+earnings <- read_csv("https://raw.githubusercontent.com/febse/data/main/econ/earnings.csv")
+earnings %>% head()
 ```
 
-The same code can be rewritten in a more convenient way using [pipes](https://r4ds.had.co.nz/pipes.html).
+First we will convert the height and weight measurements from their original scales (inch, pound) to cm and kg. We will create two new columns with informative names using the `mutate` function.
 
 ```{r}
 earnings1 <- earnings %>%
@@ -63,7 +58,16 @@ earnings1 <- earnings %>%
 
 Note that the object holding the original data is unaffected by mutate and select. The reason for this is that functions in R generally do not change their arguments. If you want to add the two new columns to the original data set `earnings`, you need to overwrite it with an assignment.
 
-## Basic data summaries
+::: {#exr-r-tibbles}
+## Mutate
+
+Create a two new columns in the `earnings` dataset:
+
+-   The first one should be called `earn_eur` and should contain the annual income in EUR (take 1 EUR = 1.05 USD as the exchange rate).
+-   The second one should be called `earnk_eur` and should contain the annual income in 1,000 EUR.
+:::
+
+## Basic Data Summaries
 
 The first step in any data analysis is to gain an initial understanding of the context of the data and the distributions of the variables of interest. In this course our main focus will be on two features of the variables: their location and their variability (how different are the observations between each other).
 
@@ -214,33 +218,29 @@ sd(x)
 ```
 :::
 
-
-:::{#exr-empirical-moments}
+::: {#exr-empirical-moments}
 ## Empirical Moments (Mean and Variance)
 
-1. Compute the sample mean and variance of the annual earnings of the customers in the `earnings` data set. First, compute it by accessing the columns of the data using the dollar syntax. 
+1.  Compute the sample mean and variance of the annual earnings of the customers in the `earnings` data set. First, compute it by accessing the columns of the data using the dollar syntax.
 
 ```{r}
 
 ```
 
-
-2. Then use the `summarize` function from the `dplyr` (already loaded) package to compute the mean and the variance of the `earn` variable.
-
-```{r}
-
-```
-
-3. Run the same calculations as before, but this time group the dataset by the `ethnicity` variable. This will give you the mean and the variance of the annual earnings for every ethnic group in the data set. Use the `group_by` function.
+2.  Then use the `summarize` function from the `dplyr` (already loaded) package to compute the mean and the variance of the `earn` variable.
 
 ```{r}
 
 ```
 
+3.  Run the same calculations as before, but this time group the dataset by the `ethnicity` variable. This will give you the mean and the variance of the annual earnings for every ethnic group in the data set. Use the `group_by` function.
+
+```{r}
+
+```
 :::
 
-
-### Overview of the data
+### Data Overview
 
 The `skim` function from the `skimr` package provides a quick overview of the data set. It shows the number of observations, the number of variables, the names of the variables, the type of the variables, the number of missing values, the mean, the standard deviation, the minimum and maximum values, and the quartiles for the numeric variables.
 
@@ -288,7 +288,11 @@ Group comparisons
 ```{r}
 earnings %>%
   ggplot(aes(x = height, y = ethnicity)) +
-  geom_boxplot()
+  geom_boxplot() +
+  labs(
+    x = "Height (inches)",
+    y = "Ethnicity"
+  )
 ```
 
 The scatterplot will be our primary tool in studying associations between variables. It represents each observation as a point in a coordinate system defined by the variables that we would like to study.
@@ -304,66 +308,36 @@ earnings1 %>%
 ```
 
 ```{r}
-library(plotly)
-
-# Create a scatterplot
-fig <- plot_ly(earnings1, x = ~weight_kg, y = ~height_cm, mode = 'markers')
-fig
-```
-
-
-```{r}
 summary(lm(height_cm ~ weight_kg, data = earnings1))
 ```
 
-:::{#exr-visualizations}
+::: {#exr-visualizations}
+1.  Create a new variable `bmi` (body mass index) in the `earnings` data set. The BMI is defined as the weight in kilograms divided by the square of the height in meters. The height in meters is the height in centimeters divided by 100.
 
-1. Create a new variable `bmi` (body mass index) in the `earnings` data set. The BMI is defined as the weight in kilograms divided by the square of the height in meters. The height in meters is the height in centimeters divided by 100.
-
-```{r}
-earnings <- earnings %>%
-  mutate(
-    bmi = weight_kg / (height_cm / 100)^2
-  )
-```
-
-
-2. The reference ranges for the BMI are as follows:
-
-- Under 18,5: Underweight
-- 18,5 - 24,9: Normal
-- 25 - 29,9: Overweight
-- 30 oder mehr: Obese
-
-Create a two new variables `is_underweight`, `is_normal` in the dataset. *Hint*: Use the `mutate` function and the `<`, `<=`, `>`, `>=` operators. You can join multiple conditions using the `&` (logical and) operator. Don't forget to uncommend the code first (Ctrl+Shift+C). How many customers are underweight and how many have a normal weight? Use the `summarize` function to compute the number of customers in each category.
+$$
+\text{BMI} = \frac{\text{weight (kg)}}{(\text{height (cm)} / 100)^2}
+$$
 
 ```{r}
-earnings <- earnings %>%
-  mutate(
-    is_underweight = bmi < 18.5,
-    is_normal = bmi >= 18.5 & bmi <= 24.9
-  )
 
-earnings %>%
-  summarize(
-    n_underweight = sum(is_underweight, na.rm = TRUE),
-    n_normal = sum(is_normal, na.rm = TRUE)
-  )
 ```
 
+2.  The reference ranges for the BMI are as follows:
+
+-   Under 18,5: Underweight
+-   18,5 - 24,9: Normal
+-   25 - 29,9: Overweight
+-   30 oder mehr: Obese
+
+Create two new variables `is_underweight`, `is_normal` in the dataset. *Hint*: Use the `mutate` function and the `<`, `<=`, `>`, `>=` operators. You can join multiple conditions using the `&` (logical and) operator. Don't forget to uncommend the code first (Ctrl+Shift+C). How many customers are underweight and how many have a normal weight? Use the `summarize` function to compute the number of customers in each category.
+
+```{r}
+
+```
 :::
 
-3. Group the data by `male` and compute the number of customers in each group, as well as the number of underweight and normal weight customers in each group. Additionally, compute the share of underweight and normal weight customers in each group. *Hint*: Use the `group_by` function and the `summarize` function. Don't forget to uncommend the code first (Ctrl+Shift+C). The `n()` function can be used to compute the number of observations in each group.
+3.  Group the data by `male` and compute the number of customers in each group, as well as the number of underweight and normal weight customers in each group. Additionally, compute the share of underweight and normal weight customers in each group. *Hint*: Use the `group_by` function and the `summarize` function. Don't forget to uncommend the code first (Ctrl+Shift+C). The `n()` function can be used to compute the number of observations in each group.
 
 ```{r}
-earnings %>%
-  group_by(male) %>%
-  summarize(
-    # Count the number of customers in each group
-    n = n(),
-    n_underweight = sum(is_underweight, na.rm = TRUE),
-    n_normal = sum(is_normal, na.rm = TRUE),
-    share_underweight = mean(is_underweight, na.rm = TRUE),
-    share_normal = mean(is_normal, na.rm = TRUE)
-  )
+
 ```
