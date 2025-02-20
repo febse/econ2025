@@ -48,21 +48,20 @@ For a complete list of shortcuts, you can go to `Help` -\> `Keyboard Shortcuts H
 
 Very often we want to store a value in the memory of the computer so that we can reuse it later. In R we store values under *names* (variables) by using the assignment operator \`\<-\` Shortcut for the assignment operator:
 
-:::{.callout-warning}
+::: callout-warning
 ## Assignment Operator Shortcut
 
-You can insert the whole `<-` operator by pressing `Alt -` (minus). It is important to note 
-that `<-` and `< -` (with space between the characters) do completely different things (see below).
+You can insert the whole `<-` operator by pressing `Alt -` (minus). It is important to note that `<-` and `< -` (with space between the characters) do completely different things (see below).
 :::
 
 ```{r}
 y <- 34
 y - 40
 ```
+
 ```{r}
 y < - 34
 ```
-
 
 Run this chunks and look at the global environment (right side of R Studio) to see it appear\
 in the list of objects.
@@ -300,16 +299,15 @@ This is a lot nicer and easier to read than the equivalent
 round(sqrt(abs(mean(x))), 2)
 ```
 
-:::{#exr-r-pipes}
+::: {#exr-r-pipes}
 ## Pipes
 
-Compute the square root of the numbers 2 and three, then take the (natural) logarithm of the result and round it to three decimal places. Compute the result 
+Compute the square root of the numbers 2 and three, then take the (natural) logarithm of the result and round it to three decimal places. Compute the result
 
-1. Using nested function calls
-2. Using the pipe operator
+1.  Using nested function calls
+2.  Using the pipe operator
 
-
-*Hint*: use the functions `sqrt`, `log`, and `round`. 
+*Hint*: use the functions `sqrt`, `log`, and `round`.
 
 $$
 \log{\sqrt{2}} \quad \text{and} \quad \log{\sqrt{3}}
