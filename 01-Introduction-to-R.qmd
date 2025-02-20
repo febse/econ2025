@@ -275,7 +275,7 @@ Use the `incomes` vector from the previous exercise. Create a new vector called 
 ```{r}
 # Write you code here
 is_low_income <- incomes < income_avg
-is_low_income[length(low_income)]
+is_low_income[length(is_low_income)]
 
 incomes[is_low_income]
 length(incomes[is_low_income])
