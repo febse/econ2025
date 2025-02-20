@@ -63,8 +63,7 @@ y - 40
 y < - 34
 ```
 
-Run this chunks and look at the global environment (right side of R Studio) to see it appear\
-in the list of objects.
+Run this chunks and look at the global environment (right side of R Studio) to see it appear in the list of objects.
 
 ::: {#exr-r-arithmetc}
 ## Arithmetic Operations
@@ -74,7 +73,9 @@ Create two new variables called `x1` and `x2` and assign them the values 3 and 4
 
 ```{r}
 # Write you code here
-
+x1 <- 3
+x2 <- 4
+x1 + x2
 ```
 
 ## Numeric Vectors
@@ -113,6 +114,13 @@ Create a new variable called `incomes` and assign it the values 100, 200, 300, 4
 ```{r}
 # Write your code here
 
+incomes <- c(100, 200, 300, 400, 500)
+income_avg <- mean(incomes)
+income_total <- sum(incomes)
+income_diff <- incomes - income_avg
+
+income_diff
+mean(income_diff)
 ```
 
 ## Character Vectors
@@ -225,12 +233,14 @@ all.equal(sqrt(2)^2, 2)
 ::: {#exr-r-logical-operators}
 ## Logical Operators and Logical Values
 
-Use the `incomes` vector from the previous exercise. Create a new vector called `high_income` that holds the logical values of whether the income is greater than the average. Count the number of elements with high income and find the proportion of high incomes.
+Use the `incomes` vector from the previous exercise. Create a new vector called `is_high_income` that holds the logical values of whether the income is greater than the average. Count the number of elements with high income and find the proportion of high incomes.
 :::
 
 ```{r}
 # Write you code here
-
+is_high_income <- incomes > income_avg
+sum(is_high_income)
+mean(is_high_income)
 ```
 
 ## Indexing
@@ -259,12 +269,16 @@ expenses[c(TRUE, FALSE, TRUE, FALSE, TRUE)]
 ::: {#exr-r-indexing}
 ## Indexing
 
-Use the `incomes` vector from the previous exercise. Create a new vector called `low_income` that holds the logical values of whether the income is less than the average. Select the last element of the new vector and print it to the console (Hint: use the `length` function to count the number of elements in this vector).
+Use the `incomes` vector from the previous exercise. Create a new vector called `is_low_income` that holds the logical values of whether the income is less than the average. Select all elements from the `incomes` vector that are low income. How many low income elements are there?
 :::
 
 ```{r}
 # Write you code here
+is_low_income <- incomes < income_avg
+is_low_income[length(low_income)]
 
+incomes[is_low_income]
+length(incomes[is_low_income])
 ```
 
 ## Pipes
@@ -322,6 +336,26 @@ $$
 ```{r}
 # Write your code here
 
+round(log(sqrt(2)), digits=3)
+round(log(sqrt(3)), digits=3)
+round(log(sqrt(c(2, 3))), digits=3)
+
+2 %>% 
+  sqrt() %>% 
+  log() %>% 
+  round(3)
+
+3 %>%
+  sqrt() %>%
+  log() %>%
+  round(3)
+
+# Or the two in one line
+
+c(2, 3) %>% 
+  sqrt() %>% 
+  log() %>% 
+  round(3)
 ```
 
 ## Factors (optional)
