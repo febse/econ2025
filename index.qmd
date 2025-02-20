@@ -5,7 +5,7 @@
 
 [{{< var url >}}]({{< var url >}}){style="font-size:2em"}
 
-![](figures/qrcode.png)
+![](figures/qr_code.png)
 :::
 
 ## Schedule
