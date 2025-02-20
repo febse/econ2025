@@ -110,6 +110,11 @@ Create a new variable called `incomes` and assign it the values 100, 200, 300, 4
 -   Compute the average of the new vector `income_diff`. Is the result surprising?
 :::
 
+```{r}
+# Write your code here
+
+```
+
 ## Character Vectors
 
 There are three types of vectors in R: numeric, character, and logical. Character vectors are used to store text data. When you write text in R, you need to enclose it in quotes. You can use either single or double quotes, but you need to be consistent.
