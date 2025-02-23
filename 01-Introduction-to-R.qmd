@@ -403,7 +403,7 @@ You can think of a function as a recipe. It takes some ingredients (arguments) a
 
 Let's look at some examples of functions in R, without going into too much detail.
 
-To define a function, you use the `function` keyword and assing the function to a variable. The function is then called by using the variable name and passing the arguments in parentheses. The function has a body that is enclosed in curly braces.
+To define a function, you use the `function` keyword and assign the function to a variable. The function is then called by using the variable name and passing the arguments in parentheses. The function has a body that is enclosed in curly braces.
 
 Let's write a function that takes two numbers and returns TRUE or FALSE depending on whether the sum of the arguments is odd. Functions return the value of the last expression in the body of the function unless you explicitly use the `return` keyword.
 
