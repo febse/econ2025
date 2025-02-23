@@ -77,7 +77,6 @@ bikes %>%
   )
 ```
 
-
 Note that the object holding the original data is unaffected by mutate and select. The reason for this is that functions in R generally do not change their arguments. If you want to add the two new columns to the original data set `bikes`, you need to overwrite it with an assignment.
 
 ```{r}
@@ -102,12 +101,11 @@ Create a new column in the `bikes` dataset called `temp_felt_c` that contains th
 
 The first step in any data analysis is to gain an initial understanding of the context of the data and the distributions of the variables of interest. In this course our main focus will be on two features of the variables: their location and their variability (how different are the observations between each other). In addition, an initial screening of is helpful to identify potential problems in the data:
 
-- Extremely unusual values (outliers)
-- Missing values
-- Logical inconsistencies in the data
+-   Extremely unusual values (outliers)
+-   Missing values
+-   Logical inconsistencies in the data
 
 It is especially important to detect these problems in the early stages of the analysis.
-
 
 ### Location
 
@@ -129,7 +127,7 @@ Another measure of location is the (empirical) median. You can compute it using 
 median(bikes$cnt)
 ```
 
-:::{#exr-location}
+::: {#exr-location}
 ## Location (Mean and Median)
 
 Compute the average and the median temperature. How do you interpret these values?
@@ -138,11 +136,9 @@ Compute the average and the median temperature. How do you interpret these value
 # Write your code here
 
 ```
-
 :::
 
-Other measures of locations are the mode (the most frequent value)  and the quantiles. In general, the mode *does not make sense* only makes sense for
-categorical variables. 
+Other measures of locations are the mode (the most frequent value) and the quantiles. In general, the mode *does not make sense* only makes sense for categorical variables.
 
 ```{r}
 min(bikes$cnt)
@@ -152,8 +148,7 @@ max(bikes$cnt)
 quantile(bikes$cnt, probs = c(0, 0.25, 0.5, 0.75, 1))
 ```
 
-The first quartile of `cnt` (25-th percentile and 0.25 quantile are different names for the same thing) is the number of bike rentals per hour such that 
-about 25 percent (one quarter) of the hours had fewer rentals.
+The first quartile of `cnt` (25-th percentile and 0.25 quantile are different names for the same thing) is the number of bike rentals per hour such that about 25 percent (one quarter) of the hours had fewer rentals.
 
 ```{r}
 quantile(bikes$cnt, 0.25)
@@ -163,7 +158,6 @@ quantile(bikes$cnt, 0.25)
 ```{r}
 mean(bikes$cnt < 257)
 ```
-
 
 The second quartile is the same as the median (two quarters).
 
@@ -181,18 +175,17 @@ mean(bikes$cnt < quantile(bikes$cnt, 0.75))
 mean(bikes$cnt > quantile(bikes$cnt, 0.75))
 ```
 
-
-:::{#exr-location-quantiles}
+::: {#exr-location-quantiles}
 ## Minimum, Maximum, and Quartiles
 
 Compute the minimum, maximum, and the quartiles of the `temp_c` variable. How do you interpret these values? Compute the proportion of hours with a temperature:
 
-- Below the first quartile
-- Above the median
-- Above the third quartile.
-- Between the first and the third quartile.
-- Between the median and the third quartile.
-- Between the median and the first quartile.
+-   Below the first quartile
+-   Above the median
+-   Above the third quartile.
+-   Between the first and the third quartile.
+-   Between the median and the third quartile.
+-   Between the median and the first quartile.
 
 ```{r}
 # Write your code here
@@ -202,8 +195,7 @@ Compute the minimum, maximum, and the quartiles of the `temp_c` variable. How do
 
 ### Variability (Spread)
 
-The next important feature of the data is its variability. It answers the following question: how different are the customers between each other with respect to body height (for example). There are numerous ways to measure variability. To illustrate this, let us consider look at the boxplot of 
-the `cnt` variable by `season`.
+The next important feature of the data is its variability. It answers the following question: how different are the customers between each other with respect to body height (for example). There are numerous ways to measure variability. To illustrate this, let us consider look at the boxplot of the `cnt` variable by `season`.
 
 A boxplot is a graphical representation of the distribution of the data that uses the quartiles to show the location and the spread of the data. The boxplot shows the median (the second quartile), the first and the third quartile (the 25-th and the 75-th percentile), and the whiskers that extend to the most extreme data points that are not considered outliers. Outliers are shown as individual points.
 
@@ -310,7 +302,7 @@ sd(x)
 ```
 :::
 
-:::{.callout-note}
+::: callout-note
 ## Interpretation of the Standard Deviation
 
 The standard deviation is a measure of the spread of the data. It is the average distance of the observations from the mean.
@@ -332,7 +324,6 @@ x3 <- c(-2, -1, 0, 1, 2)
 var(x)
 sd(x)
 ```
-
 :::
 
 Let's compute the empirical standard deviations of `cnt` by `season`. We will use this opporuinity to introduce the `group_by` function from the `dplyr` package. This function allows us to group the data by a variable and then apply a function to each group.
@@ -346,11 +337,10 @@ bikes %>%
   )
 ```
 
-
 ::: {#exr-empirical-moments}
 ## Empirical Moments (Mean and Variance)
 
-1. Compute the mean and the variance of the `temp_c` variable in the `bikes` dataset. How do you interpret these values?
+1.  Compute the mean and the variance of the `temp_c` variable in the `bikes` dataset. How do you interpret these values?
 
 ```{r}
 # Write your code here
@@ -426,17 +416,16 @@ summary(lm(cnt ~ temp_c, data = bikes))
 ```
 
 ::: {#exr-descriptive-statistics}
-
 The `earnings` dataset contains the result from a survey of mall customers. The dataset contains the following variables:
 
-- `height` - the height of the customer in inches
-- `weight` - the weight of the customer in pounds
-- `male` - a binary variable indicating a male (1) customer or a female (0) customer
-- `earn` - the annual earnings of the customer in dollars
-- `earnk` - the annual earnings of the customer in thousands of dollars
-- `ethnicity` - A categorical variable indicating the ethnicity of the customer (White, Black, Hispanic, Other)
-- `education` - The number of years of education of the customer
-- `mother_education` - The number of years of education of the customer's mother
+-   `height` - the height of the customer in inches
+-   `weight` - the weight of the customer in pounds
+-   `male` - a binary variable indicating a male (1) customer or a female (0) customer
+-   `earn` - the annual earnings of the customer in dollars
+-   `earnk` - the annual earnings of the customer in thousands of dollars
+-   `ethnicity` - A categorical variable indicating the ethnicity of the customer (White, Black, Hispanic, Other)
+-   `education` - The number of years of education of the customer
+-   `mother_education` - The number of years of education of the customer's mother
 
 ```{r}
 earnings <- read_csv("https://github.com/febse/data/raw/refs/heads/main/econ/earnings.csv") %>% 
@@ -446,32 +435,34 @@ earnings <- read_csv("https://github.com/febse/data/raw/refs/heads/main/econ/ear
 earnings %>% head()
 ```
 
-- Create a new variable `bmi` (body mass index) in the `earnings` data set. The BMI is defined as the weight in kilograms divided by the square of the height in meters. The height in meters is the height in centimeters divided by 100. To facilitate the computation, convert the height from inches to centimeters and the weight from pounds to kilograms and store these values in new variables `height_cm` and `weight_kg`.
+-   Create a new variable `bmi` (body mass index) in the `earnings` data set. The BMI is defined as the weight in kilograms divided by the square of the height in meters. The height in meters is the height in centimeters divided by 100. To facilitate the computation, convert the height from inches to centimeters and the weight from pounds to kilograms and store these values in new variables `height_cm` and `weight_kg`.
 
 $$
 \text{BMI} = \frac{\text{weight (kg)}}{(\text{height (cm)} / 100)^2}
 $$
 
-- Compute the quartiles of the `bmi` variable. How do you interpret these values?
+-   Compute the quartiles of the `bmi` variable. How do you interpret these values?
 
 ```{r}
 # Write your code here
 
 ```
 
-
-- Visualize the distribution of the `bmi` variable by sex (use the `male`). What can you say about the distributions of the BMI between men and women?
+-   Visualize the distribution of the `bmi` variable by sex (use the `male`). What can you say about the distributions of the BMI between men and women?
 
 ```{r}
 # Write your code here
 
 ```
 
-- The reference ranges for the BMI are as follows:
+-   The reference ranges for the BMI are as follows:
 
 -   Under 18,5: Underweight
+
 -   18,5 - 24,9: Normal
+
 -   25 - 29,9: Overweight
+
 -   30 oder mehr: Obese
 
 Create two new variables `is_underweight`, `is_normal` in the dataset. *Hint*: Use the `mutate` function and the `<`, `<=`, `>`, `>=` operators. You can join multiple conditions using the `&` (logical and) operator. Don't forget to uncomment the code first (Ctrl+Shift+C). How many customers are underweight and how many have a normal weight? Use the `summarize` function to compute the number of customers in each category.
@@ -481,12 +472,10 @@ Create two new variables `is_underweight`, `is_normal` in the dataset. *Hint*: U
 
 ```
 
-
-- Group the data by `male` and compute the number of customers in each group, as well as the number of underweight and normal weight customers in each group. Additionally, compute the share of underweight and normal weight customers in each group. *Hint*: Use the `group_by` function and the `summarize` function. Don't forget to uncommend the code first (Ctrl+Shift+C). The `n()` function can be used to compute the number of observations in each group.
+-   Group the data by `male` and compute the number of customers in each group, as well as the number of underweight and normal weight customers in each group. Additionally, compute the share of underweight and normal weight customers in each group. *Hint*: Use the `group_by` function and the `summarize` function. Don't forget to uncommend the code first (Ctrl+Shift+C). The `n()` function can be used to compute the number of observations in each group.
 
 ```{r}
 # Write your code here
 
 ```
-
 :::
