@@ -439,7 +439,7 @@ f(x)
 x
 ```
 
-The function above assigns a value to the frst element of the vector `y` and returns the modified vector. However, the original vector `x` is not modified, because `y` is a copy of `x`.
+The function above assigns a value to the first element of the vector `y` and returns the modified vector. However, the original vector `x` is not modified, because `y` is a copy of `x`.
 
 ```{r}
 s1 <- c(4, 1, 2, 3)
