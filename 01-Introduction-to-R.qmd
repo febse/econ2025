@@ -6,7 +6,7 @@ A R Markdown document is a pure text file that you can open in any text editor (
 
 In the body of the document we write code in code chunks that start with three backticks and end with three backticks. After the first sequence of backticks there is a language identifier which in our case will always be `r`.
 
-It may be easier to work with R Markdown documents in R Studio's `Visual` mode. After opening a R Markdown document, you will find two buttons (`Source` and `Visual`) just below the file name (below the save file icon). Click the `Visual` button to activate it. After that you will be able to click on the `Insert` menu and add code chunks from `Insert` -\> `Code Chunk` -\> `R`.
+It may be easier to work with R Markdown documents in R Studio's `Visual` mode. After opening a R Markdown document, you will find two buttons (`Source` and `Visual`) just below the file name (below the save file icon). Click the `Visual` button to activate it. After that you will be able to click on the `Insert` menu and add code chunks from `Insert` -\> `Executable Cell` -\> `R`.
 
 To run a code chunk, find the green `Run` button on the top right side of the chunk and click on it. You will see the printed output of the chunk below it. Note that some chunks do not print any output (e.g. chunks that only contain assignments).
 
