@@ -885,8 +885,8 @@ ggplot(df, aes(x = x, y = y)) +
     x = 0.76, y = 0.42
   ) + 
   labs(
-    x = "",
-    y = ""
+    x = "n1",
+    y = "n2"
   ) + 
   theme(legend.position = "none")
 ```
