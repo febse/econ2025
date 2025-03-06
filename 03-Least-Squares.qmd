@@ -11,8 +11,30 @@ Variables description:
 
 
 ```{r setup, include=FALSE}
+
 # Load the tidyverse packages
+
+if (!require("skimr")) {
+    install.packages("skimr")
+}
+
+if (!require("tidyverse")) {
+    install.packages("tidyverse")
+}
+
+if (!require("ggforce")) {
+  install.packages("ggforce")
+}
+
+if (!require("latex2exp")) {
+    install.packages("latex2exp")
+}
+
+
 library(tidyverse)
+library(latex2exp)
+library(ggforce)
+
 
 # Download and read the data
 invoices <- read.delim('https://raw.githubusercontent.com/feb-uni-sofia/econometrics2020-solutions/master/data/invoices.txt')
@@ -120,22 +142,22 @@ invoices %>%
 #| fig-cap: "Prediction and Residuals for Strategy 2"
 #| code-fold: true
 
-# invoices %>%
-#     mutate(
-#         Time_hat = 0.6 + 0.01 * Invoices,
-#         residuals = Time - Time_hat
-#     ) %>%
-# ggplot(aes(x = Invoices, y = Time)) +
-#   geom_point() +
-#   geom_abline(intercept = 0.6, slope = 0.01) +
-#   ylim(c(0, 5)) +
-#   geom_segment(
-#     aes(
-#         xend = Invoices,
-#         yend = Time_hat, 
-#         alpha = 0.5
-#     )) +
-#   geom_label(aes(label = round(residuals, 2)))
+invoices %>%
+    mutate(
+        Time_hat = 0.6 + 0.01 * Invoices,
+        residuals = Time - Time_hat
+    ) %>%
+ggplot(aes(x = Invoices, y = Time)) +
+  geom_point() +
+  geom_abline(intercept = 0.6, slope = 0.01) +
+  ylim(c(0, 5)) +
+  geom_segment(
+    aes(
+        xend = Invoices,
+        yend = Time_hat, 
+        alpha = 0.5
+    )) +
+  geom_label(aes(label = round(residuals, 2)))
 ```
 
 Which strategy is better? To answer this question we need to agree on a criterion for comparison. The criterion should be a summary of the differences between the actual and the predicted values and should be small when the differences are small. It should also be zero when the predictions are perfect (i.e. no differences between predicted and actual values).
@@ -777,19 +799,6 @@ First, let us think about the data in terms of vectors in a $\mathbb{R}^n$ dimen
 #| fig-cap: "Vector projection"
 #| code-fold: true
 #| warning: false
-
-if (!require("ggforce")) {
-  install.packages("ggforce")
-}
-
-if (!require("latex2exp")) {
-    install.packages("latex2exp")
-}
-
-
-library(latex2exp)
-library(tidyverse)
-library(ggforce)
 
 X <- c(2, 3) / 4
 Y <- c(1, 0.2)
