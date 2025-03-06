@@ -11,6 +11,11 @@ if (!requireNamespace("tidyverse", quietly = TRUE)) {
   install.packages("tidyverse")
 }
 
+if (!requireNamespace("skimr", quietly = TRUE)) {
+  install.packages("skimr")
+}
+
+
 library(tidyverse)
 library(readxl)
 ```
@@ -115,7 +120,8 @@ $$
 \bar{x} = \frac{1}{n}(x_1 + x_2 + \ldots + x_n) = \frac{1}{n}\sum_{i = 1}^{n} x_i
 $$
 
-Let us now compute the arithmetic average of `weight` and `height`. One way to access the columns of the data set `earnings` is to write the name of the data set and then after a \$ sign the name of the column.
+
+Let us now compute the arithmetic average of `cnt`. One way to access the columns of the data set `bikes` is to write the name of the data set and then after a \$ sign the name of the column.
 
 ```{r}
 mean(bikes$cnt)
@@ -416,6 +422,8 @@ summary(lm(cnt ~ temp_c, data = bikes))
 ```
 
 ::: {#exr-descriptive-statistics}
+## Mall Customers
+
 The `earnings` dataset contains the result from a survey of mall customers. The dataset contains the following variables:
 
 -   `height` - the height of the customer in inches
