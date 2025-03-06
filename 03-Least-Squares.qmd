@@ -928,30 +928,6 @@ plot_ly(x = ~x, y = ~y, z = ~z1, type = "mesh3d", data = xyz1, opacity = 0.2) %>
   )
 ```
 
-```{r}
-library(plotly)
-
-# Define the plane
-x <- seq(from=-10, to=10, by=1)
-y <- seq(from=-10, to=10, by=1)
-z1 <- 6 - x - y
-
-xyz1 <- tidyr::crossing(x, y) %>%
-  mutate(z1 = 6 - x - y)
-
-# Create the plot
-fig <- plot_ly() %>%
-  add_mesh3d(x = ~x, y = ~y, z = ~z1, data = xyz1, opacity = 0.2) %>%
-  add_markers(x = ~4, y = ~2, z = ~8, marker = list(color = 'red', size = 5)) %>%
-  
-  layout(scene = list(
-    xaxis = list(title = "X"),
-    yaxis = list(title = "Y"),
-    zaxis = list(title = "Z")
-  ))
-
-fig
-```
 In the one-variable case without an intercept term, we could divide the equation by $x^T x$ to get the formula for $\hat{\beta}_1$. This worked because the scalar product of a vector is a scalar. However, here we need to deal with a whole matrix ($X^TX$). We can solve the equation for $\hat{\beta}$ by pre-multiplying both sides by the inverse of $X^T X$.
 
 $$
