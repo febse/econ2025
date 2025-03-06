@@ -215,47 +215,8 @@ Can you guess better values for the coefficients in the linear equation? Try you
 
 The previous discussion leads us to a question. Can we find values for the coefficients in the linear equation that minimize the MSE? The answer is yes. The method is called least squares.
 
-First, let us visualize the MSE as a function of the coefficients. For this purpose, we will simply calculate the MSE for a grid of values of the coefficients and plot the results (@fig-rss-3d)
+First, let us visualize the MSE as a function of the coefficients. For this purpose, we will simply calculate the MSE for a grid of values of the coefficients and plot the results (@fig-rss-beta0)
 
-```{r}
-#| label: fig-rss-3d
-#| fig-cap: "RSS as a function of the coefficients"
-#| code-fold: true
-
-# NOTE: this code here is only for illustration purposes, you don't need to study it or understand it for the course
-
-library(plotly)
-
-# Create a grid of values for beta0_hat and beta1_hat
-
-beta0_hat <- seq(0.4, 1, length.out = 50)
-beta1_hat <- seq(0.001, 0.015, length.out = 50)
-
-dt <- expand.grid(beta0_hat = beta0_hat, beta1_hat = beta1_hat) %>%
-  mutate(
-    # Compute the RSS for each combination of beta0_hat and beta1_hat
-    RSS = map2_dbl(beta0_hat, beta1_hat, ~{
-      Time_hat <- .x + .y * invoices$Invoices
-      sum((invoices$Time - Time_hat)^2)
-    })
-  )
-
-fig <- plot_ly(
-  x=beta0_hat, 
-  y=beta1_hat, 
-  z = matrix(dt$RSS, nrow = length(beta0_hat), ncol = length(beta1_hat)),
-  ) %>% 
-    add_surface() %>% 
-    layout(
-        scene = list(
-          xaxis = list(title = "beta_hat_0"),
-          yaxis = list(title = "beta_hat_1"),
-          zaxis = list(title = "RSS")
-        )
-    )
-
-fig
-```
 
 Our goal is to find the values of $\beta_0$ and $\beta_1$ that minimize the RSS. The method of least squares provides a formula for the coefficients that minimize the RSS.
 
@@ -327,6 +288,41 @@ $$
 The value of $\hat{\beta}_0$ that minimizes the MSE is thus just the average of the observed values of $y_i$.
 :::
 
+If you find the above derivation hard to follow, try to write down
+the RSS for the intercept-only equation with only two observations. Then take the derivative with respect to $\hat{\beta}_0$ and set it to zero.
+
+:::{.callout-note collapse="true"}
+## Solution for the intercept-only equation with two observations
+
+$$
+\text{RSS}(\hat{\beta}_0) = (y_1 - \hat{\beta}_0)^2 + (y_2 - \hat{\beta}_0)^2
+$$
+
+The derivative of the RSS with respect to $\hat{\beta}_0$ is
+
+$$
+\begin{align*}
+\frac{\partial}{\partial \hat{\beta}_0} \text{RSS}(\hat{\beta}_0) & = 2(y_1 - \hat{\beta}_0) \cdot (-1) + 2(y_2 - \hat{\beta}_0) \cdot (-1) \\
+\end{align*}
+$$
+
+Set it to zero and solve for $\hat{\beta}_0$.
+
+$$
+\begin{align*}
+2(y_1 - \hat{\beta}_0)(-1) + 2(y_2 - \hat{\beta}_0)(-1) & = 0 \quad \text{divide by -2 to simplify}\\ 
+(y_1 - \hat{\beta}_0) + (y_2 - \hat{\beta}_0) & = 0 \\
+y_1 - \hat{\beta}_0 + y_2 - \hat{\beta}_0 & = 0 \\
+y_1 + y_2 - 2\hat{\beta}_0 & = 0 \\
+2\hat{\beta}_0 & = y_1 + y_2 \\
+\hat{\beta}_0 & = \frac{y_1 + y_2}{2}
+\end{align*}
+$$
+
+Because there are now only two observations, their sum divided by two is their arithmetic average.
+
+:::
+
 :::{#exr-no-intercept-equation}
 Consider the following equation for the predictions
 
@@ -347,7 +343,7 @@ $$
 \hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i
 $$
 
-The RSS is (as above)
+The RSS is again, the sum of the squared differences between observations ($y_i$) and predictions ($\hat{y}_i$).
 
 $$
 \begin{align*}
@@ -355,6 +351,48 @@ $$
   & = \sum_{i=1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i)^2
 \end{align*}
 $$
+
+This time the RSS depends on two variables ($\hat{\beta}_0$ and $\hat{\beta}_1$) and is a 3D surface. Again, we can set up two sequences of values for the two coefficients, calculate the RSS for each pair of values and plot the results [@fig-rss-3d].
+
+```{r}
+#| label: fig-rss-3d
+#| fig-cap: "RSS as a function of the coefficients"
+#| code-fold: true
+
+# NOTE: this code here is only for illustration purposes, you don't need to study it or understand it for the course
+
+library(plotly)
+
+# Create a grid of values for beta0_hat and beta1_hat
+
+beta0_hat <- seq(0.4, 1, length.out = 50)
+beta1_hat <- seq(0.001, 0.015, length.out = 50)
+
+dt <- expand.grid(beta0_hat = beta0_hat, beta1_hat = beta1_hat) %>%
+  mutate(
+    # Compute the RSS for each combination of beta0_hat and beta1_hat
+    RSS = map2_dbl(beta0_hat, beta1_hat, ~{
+      Time_hat <- .x + .y * invoices$Invoices
+      sum((invoices$Time - Time_hat)^2)
+    })
+  )
+
+fig <- plot_ly(
+  x=beta0_hat, 
+  y=beta1_hat, 
+  z = matrix(dt$RSS, nrow = length(beta0_hat), ncol = length(beta1_hat)),
+  ) %>% 
+    add_surface() %>% 
+    layout(
+        scene = list(
+          xaxis = list(title = "beta_hat_0"),
+          yaxis = list(title = "beta_hat_1"),
+          zaxis = list(title = "RSS")
+        )
+    )
+
+fig
+```
 
 $$
 \begin{align*}
