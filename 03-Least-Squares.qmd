@@ -872,7 +872,6 @@ ggplot(df, aes(x = x, y = y)) +
   annotate(
     geom = "text",
     label = "bx",
-    # label = TeX(r"(\hat{y} = \hat{\beta} x)"),
     x = 0.35, y = 0.58
   ) +
   annotate(
