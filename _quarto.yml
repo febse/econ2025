@@ -8,7 +8,7 @@ book:
   date: last-modified
   chapters:
     - index.qmd
-    # - 00-Homework.qmd
+    - 00-Homework-BA.qmd
     - 00-Recommended-Literature.qmd
     - 01-Introduction-to-R.qmd
     - 02-Descriptive-Statistics.qmd

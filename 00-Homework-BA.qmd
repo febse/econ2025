@@ -1,0 +1,21 @@
+# Presentation (Business Administration) {.unnumbered}
+
+Please register your team **by March 20-th, 2025** by following the link below:
+
+<https://classroom.github.com/a/AC5DGfAH>
+
+1.  In order to register you will need a working GitHub account. If you don't have one, please create a profile with [GitHub](https://github.com/signup). Please use a working email address when opening your account, because you will receive notifications from GitHub related to your work.
+
+2.  Click on the assignment invitation link, log in to GitHub and select your student id (or name) from the roster. Please email me ([amarov\@feb.uni-sofia.bg](mailto:amarov@feb.uni-sofia.bg)) if you can't find you student id or name there!
+
+![Find your student id](figures/hw/01-Join-Assignment.png)
+
+2.  The presentation is meant to be a group assignment. The team size is limited to three members. The first member of the group can open the assignment and create the team. The rest of the members can select that team when joining. After accepting the assignment, you will see a page with a link to your homework repository.
+
+![Create a team](figures/hw/02-Create-Team.png) ![Join an existing team](figures/hw/02a-Join-Team.png)
+
+![Accept the assignment](figures/hw/03-Accept-Assignment.png)
+
+![Open the repository](figures/hw/05-Open-Repo.png)
+
+1.  You can upload files into the repository by clicking on "Add files" -\> "Upload". If you have any questions, please email me at [amarov\@feb.uni-sofia.bg](mailto:amarov@feb.uni-sofia.bg).
