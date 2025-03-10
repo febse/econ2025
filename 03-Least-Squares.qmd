@@ -861,7 +861,7 @@ ggplot(df, aes(x = x, y = y)) +
       xend = xend, yend = yend, 
       color = color
       ),
-      arrow = arrow(length = unit(0.3,"cm")
+      arrow = arrow(length = unit(0.25,"cm")
     )
   ) + 
   annotate(
@@ -881,7 +881,7 @@ ggplot(df, aes(x = x, y = y)) +
   ) + 
   annotate(
     geom = "text",
-    label = "r = y - bx",
+    label = "bx - y",
     x = 0.76, y = 0.42
   ) + 
   labs(
@@ -908,11 +908,11 @@ $$
 
 where $x^T$ is the transpose of $x$ (meaning that $x^T$ is a row vector).
 
-The least squares method can be thought of as finding the vector $y_{proj}$ that is closest to $y$ and lies on the line spanned by $x$. The vector $y - y_{proj}$ is the vector that is orthogonal to $x$ and has the smallest length.
+The least squares method can be thought of as finding the vector $y_{\text{proj}} = \hat{\beta}_1 x$ that is closest to $y$ and lies on the line spanned by $x$. The vector $y - y_{proj}$ is the vector that is orthogonal to $x$ and has the smallest length.
 
-The vector $y - y_{proj}$ is called the residual vector. The length of the residual vector is the square root of the sum of the squares of its elements. This is the same as the square root of the sum of the squares of the residuals.
+The vector $r = y - y_{\text{proj}}$ is called the residual vector. The length of the residual vector is the square root of the sum of the squares of its elements, which is the RSS that we have been trying to minimize earlier.
 
-The residual vector will be smallest in length when it is orthogonal to $x$. Therefore we can find a scalar $\hat{\beta}_1$ such that the residual vector is orthogonal to $x$.
+The residual vector will be shortest when it is orthogonal to $x$, so the question now boils down to finding a scalar $\hat{\beta}_1$ such that the residual vector is orthogonal to $x$.
 
 The condition that the residual vector is orthogonal to $x$ is that the dot product between the two vectors is equal to zero.
 
