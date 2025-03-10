@@ -40,13 +40,13 @@ library(ggforce)
 library(plotly)
 
 # Download and read the data
-invoices <- read.delim('https://raw.githubusercontent.com/feb-uni-sofia/econometrics2020-solutions/master/data/invoices.txt')
+dt <- read.delim("https://github.com/febse/data/raw/refs/heads/main/econ/invoices.txt")
 ```
 
 Get an overview of the data set.
 
 ```{r}
-invoices %>% 
+dt %>% 
     skimr::skim()
 ```
 
@@ -58,11 +58,11 @@ More precisely, our task is to predict the time needed to process 50, 120, 201, 
 #| label: fig-invoices-time
 #| fig-cap: "Time needed to process the invoices"
 #| code-fold: true
-
-ggplot(data = invoices, aes(x = Invoices, y = Time)) +
-  geom_point() +
-  geom_vline(xintercept = c(50, 120, 201, 250, 400), lty = 2, alpha = 0.5) +
-  scale_x_continuous(breaks = c(50, 120, 201, 250, 400))
+dt %>%
+  ggplot(aes(x = Invoices, y = Time)) +
+    geom_point() +
+    geom_vline(xintercept = c(50, 120, 201, 250, 400), lty = 2, alpha = 0.5) +
+    scale_x_continuous(breaks = c(50, 120, 201, 250, 400))
 ```
 
 Let us set up a bit of notation. We have a sample of $n = 30$ observations. Let $i$  be the number of the days $i=1,2,\ldots, n$. The variable of interest is the time needed to process the invoices, denoted by $\text{Time}_i$. We have one predictor variable, the number of invoices, denoted by $\text{Invoices}_i$.
@@ -73,29 +73,29 @@ As our goal is to create predictions, we will denote the predicted time needed t
 Strategy 1: Use the average processing time for the predictions
 
 $$
-\widehat{\text{Time}}_i^{eq1} = \overline{\text{Time}}
+\widehat{\text{Time}}_i^{(1)} = \overline{\text{Time}}
 $$
 
 
 Strategy 2: Use the following linear equation for the predictions
 
 $$
-\widehat{\text{Time}}_i^{eq2} = 0.6 + 0.01 \cdot \text{Invoices}_i
+\widehat{\text{Time}}_i^{(2)} = 0.6 + 0.01 \cdot \text{Invoices}_i
 $$
 
 
 :::{#exr-intercept-only-equation}
 ## Strategy 1
 
-Compute the predicted time $\widehat{Time}_i$ for the first strategy and store it in a new column `Time_hat_eq1`. Then, compute the residuals (difference between actual and predicted values) and store them in a new column `residuals_eq1`.
+Compute the predicted time $\widehat{Time}_i$ for the first strategy and store it in a new column `Time_predicted_eq1`. Then, compute the residuals (difference between actual and predicted values) and store them in a new column `residuals_1`.
 
 ```{r}
 # Hint: use the mutate function
 
-invoices <- invoices %>%
+dt <- dt %>%
     mutate(
-        Time_hat_eq1 = mean(Time),
-        residuals_eq1 = Time - Time_hat_eq1
+        Time_predicted_1 = mean(Time),
+        residuals_1 = Time - Time_predicted_1
     )
 ```
 
@@ -104,7 +104,7 @@ invoices <- invoices %>%
 :::{#exr-linear-equation}
 ## Strategy 2
 
-Compute the predicted time $\widehat{Time}_i$ for the second strategy and store it in a new column `Time_hat_eq2`. Then, compute the residuals and store them in a new column `residuals_eq2`.
+Compute the predicted time $\widehat{Time}_i^{(2)}$ for the second strategy and store it in a new column `Time_predicted_2`, compute the residuals and store them in a new column `residuals_2`.
 
 ```{r}
 # Hint: use the mutate function
@@ -121,19 +121,19 @@ Before we proceed, let us visualize the residuals of the two strategies.
 #| fig-cap: "Prediction and Residuals for Strategy 1"
 #| code-fold: true
 
-invoices %>%
+dt %>%
     mutate(
-        Time_hat = mean(Time),
-        residuals = Time - Time_hat
+        Time_predicted = mean(Time),
+        residuals = Time - Time_predicted
     ) %>%
     ggplot(aes(x = Invoices, y = Time)) +
     geom_point() +
-    geom_hline(yintercept = mean(invoices$Time), lty = 1) +
+    geom_hline(yintercept = mean(dt$Time), lty = 1) +
     ylim(c(0, 5)) +
     geom_segment(
         aes(
             xend = Invoices,
-            yend = mean(invoices$Time)
+            yend = mean(dt$Time)
             ), 
             lty = 2,
             alpha = 0.5
@@ -146,10 +146,10 @@ invoices %>%
 #| fig-cap: "Prediction and Residuals for Strategy 2"
 #| code-fold: true
 
-invoices %>%
+dt %>%
     mutate(
-        Time_hat = 0.6 + 0.01 * Invoices,
-        residuals = Time - Time_hat
+        Time_predicted = 0.6 + 0.01 * Invoices,
+        residuals = Time - Time_predicted
     ) %>%
 ggplot(aes(x = Invoices, y = Time)) +
   geom_point() +
@@ -158,7 +158,7 @@ ggplot(aes(x = Invoices, y = Time)) +
   geom_segment(
     aes(
         xend = Invoices,
-        yend = Time_hat        
+        yend = Time_predicted        
     ),
     alpha = 0.5,
     lty=2
@@ -191,22 +191,22 @@ Let's calculate the average prediction error, RSS and MSE for the two strategies
 
 ```{r}
 # Strategy 1
-invoices %>%
+dt %>%
   summarize(
-    avg_res_eq1 = mean(residuals_eq1),
-    RSS_eq1 = sum(residuals_eq1^2),
-    MSE_eq1 = mean(residuals_eq1^2),    
+    avg_res_eq1 = mean(residuals_1),
+    RSS_eq1 = sum(residuals_1^2),
+    MSE_eq1 = mean(residuals_1^2),    
   )
 ```
 
 ```{r}
 # Strategy 2
 
-# invoices %>%
+# dt %>%
 #   summarize(
-#     avg_res_eq2 = mean(residuals_eq2),
-#     RSS_eq2 = sum(residuals_eq2^2),
-#     MSE_eq2 = mean(residuals_eq2^2),    
+#     avg_res_eq2 = mean(residuals_2),
+#     RSS_eq2 = sum(residuals_2^2),
+#     MSE_eq2 = mean(residuals_2^2),    
 #   )
 ```
 
@@ -237,21 +237,21 @@ The MSE in this case is much simpler.
 
 ```{r}
 #| label: fig-rss-beta0
-#| fig-cap: "MSE as a function of beta0_hat in an intercept-only equation"
+#| fig-cap: "MSE as a function of beta_hat_0 in an intercept-only equation"
 
-invoices_beta_0_dt <- expand_grid(
-    beta0_hat = seq(0, 4, length.out = 100),
-    invoices
+rss_intercept_dt <- expand_grid(
+    beta_hat_0 = seq(0, 4, length.out = 100),
+    dt
 )
 
-rss_dt <- invoices_beta_0_dt %>%
-  group_by(beta0_hat) %>%
+rss_dt <- rss_intercept_dt %>%
+  group_by(beta_hat_0) %>%
   summarise(
-    RSS = sum((Time - beta0_hat)^2)
+    RSS = sum((Time - beta_hat_0)^2)
   )
 
 rss_dt %>%
-    ggplot(aes(x = beta0_hat, y = RSS)) +
+    ggplot(aes(x = beta_hat_0, y = RSS)) +
     geom_line()
 ```
 
@@ -366,24 +366,24 @@ This time the RSS depends on two variables ($\hat{\beta}_0$ and $\hat{\beta}_1$)
 #| code-fold: true
 
 # NOTE: this code here is only for illustration purposes, you don't need to study it or understand it for the course
-# Create a grid of values for beta0_hat and beta1_hat
+# Create a grid of values for beta_hat_0 and beta_hat_1
 
-beta0_hat <- seq(0.4, 1, length.out = 50)
-beta1_hat <- seq(0.001, 0.015, length.out = 50)
+beta_hat_0 <- seq(0.4, 1, length.out = 50)
+beta_hat_1 <- seq(0.001, 0.015, length.out = 50)
 
-dt <- expand.grid(beta0_hat = beta0_hat, beta1_hat = beta1_hat) %>%
+rss_two_coeffs <- expand.grid(beta_hat_0 = beta_hat_0, beta_hat_1 = beta_hat_1) %>%
   mutate(
-    # Compute the RSS for each combination of beta0_hat and beta1_hat
-    RSS = map2_dbl(beta0_hat, beta1_hat, ~{
-      Time_hat <- .x + .y * invoices$Invoices
-      sum((invoices$Time - Time_hat)^2)
+    # Compute the RSS for each combination of beta_hat_0 and beta_hat_1
+    RSS = map2_dbl(beta_hat_0, beta_hat_1, ~{
+      Time_predicted <- .x + .y * dt$Invoices
+      sum((dt$Time - Time_predicted)^2)
     })
   )
 
 fig <- plot_ly(
-  x=beta0_hat, 
-  y=beta1_hat, 
-  z = matrix(dt$RSS, nrow = length(beta0_hat), ncol = length(beta1_hat)),
+  x=beta_hat_0, 
+  y=beta_hat_1, 
+  z = matrix(rss_two_coeffs$RSS, nrow = length(beta_hat_0), ncol = length(beta_hat_1)),
   ) %>% 
     add_surface() %>% 
     layout(
@@ -648,7 +648,7 @@ lm(y_test ~ x_test)
 
 Our primary tool for calculating the least squares coefficients will be the `lm` function in R. The `lm` function takes a formula as its first argument and a data set as its second argument. The formula is of the form `y ~ x` where `y` is the dependent variable and `x` is the independent variable. The data set is a data frame/tibble with the variables `x` and `y`.
 
-Use the `lm` function to compute the OLS coefficients for the `invoices` data set.
+Use the `lm` function to compute the OLS coefficients for the `invoices` (dt) data set.
 and the model:
 
 $$
@@ -658,7 +658,7 @@ $$
 ```{r}
 # Uncomment the following two lines to fit the model
 
-fit_OLS <- lm(Time ~ Invoices, data = invoices)
+fit_OLS <- lm(Time ~ Invoices, data = dt)
 fit_OLS
 ```
 
@@ -671,7 +671,7 @@ predict(fit_OLS)
 ```{r}
 # Compute the RSS for the OLS model
 
-invoices <- invoices %>%
+dt <- dt %>%
     mutate(
       Time_predicted_OLS = predict(fit_OLS),
       residuals_OLS = Time - Time_predicted_OLS
@@ -681,7 +681,7 @@ invoices <- invoices %>%
 ```{r}
 # Compute the RSS and MSE for the OLS model
 
-invoices %>%
+dt %>%
   summarize(
     RSS_OLS = sum(residuals_OLS^2),
     MSE_OLS = mean(residuals_OLS^2)
@@ -694,7 +694,7 @@ invoices %>%
 ```{r}
 # Plot the predictions
 
-invoices %>%
+dt %>%
     ggplot(aes(x = Invoices, y = Time)) +
     geom_point() +
     geom_line(aes(y = Time_predicted_OLS), color = "steelblue4")
@@ -703,7 +703,7 @@ invoices %>%
 ```{r}
 # Plot the predictions using geom_smooth
 
-invoices %>%
+dt %>%
     ggplot(aes(x = Invoices, y = Time)) +
     geom_point() +
     geom_smooth(method = "lm")
@@ -759,7 +759,7 @@ The matrix $X$ is called the design matrix and contains the predictor terms. The
 You can extract the design matrix from the `fit_OLS` object using the `model.matrix` function.
 
 ```{r}
-fit_OLS <- lm(Time ~ Invoices, data = invoices)
+fit_OLS <- lm(Time ~ Invoices, data = dt)
 model.matrix(fit_OLS)
 ```
 
@@ -769,10 +769,10 @@ $$
 \hat{y} = X \hat{\beta}
 $$
 
-You can think about the least squares as finding a solution to a system of linear equations where the number of equations is greater than the number of unknowns. Let us focus on a case with one variable and two observations (the first two from the `invoices` data set).
+You can think about the least squares as finding a solution to a system of linear equations where the number of equations is greater than the number of unknowns. Let us focus on a case with one variable and two observations (the first two from the `invoices` (dt) data set).
 
 ```{r}
-invoices %>%
+dt %>%
  head(n = 2)
 ```
 
@@ -798,10 +798,10 @@ $$
 \end{align*}
 $$
 
-Let's look at the first three observations in the `invoices` data set.
+Let's look at the first three observations in the `invoices` (dt) data set.
 
 ```{r}
-invoices %>%
+dt %>%
  head(n = 3)
 ```
 
@@ -871,8 +871,9 @@ ggplot(df, aes(x = x, y = y)) +
   ) + 
   annotate(
     geom = "text",
-    label = TeX(r"(\hat{y} = \hat{\beta} x)"),
-    x = 0.31, y = 0.6
+    label = "bx",
+    # label = TeX(r"(\hat{y} = \hat{\beta} x)"),
+    x = 0.35, y = 0.58
   ) +
   annotate(
     geom = "text",
@@ -881,7 +882,7 @@ ggplot(df, aes(x = x, y = y)) +
   ) + 
   annotate(
     geom = "text",
-    label = TeX("r = y - \\hat{\\beta}x"),
+    label = "r = y - bx",
     x = 0.76, y = 0.42
   ) + 
   labs(
@@ -890,6 +891,7 @@ ggplot(df, aes(x = x, y = y)) +
   ) + 
   theme(legend.position = "none")
 ```
+
 
 What is the projection of the vector $y$ onto the vector $x$? It is the vector that is closest to $y$ and lies on the line spanned by $x$.
 
