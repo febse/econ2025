@@ -1,14 +1,12 @@
-
 # Least Squares
 
 The following data set contains information about thirty work days in an accounting company. Every day the company receives invoices from its clients and processes them (e.g. checks them, enters them into the accounting system, etc.). The data set contains the number of invoices processed on each day and the time needed to process them. Our goal is to predict the time needed to process a given number of invoices.
 
 Variables description:
 
-- `Day` (numeric): day
-- `Invoices` (numeric): number of invoices
-- `Time` (numeric): Time needed to process the invoices (hours)
-
+-   `Day` (numeric): day
+-   `Invoices` (numeric): number of invoices
+-   `Time` (numeric): Time needed to process the invoices (hours)
 
 ```{r setup, include=FALSE}
 
@@ -50,9 +48,7 @@ dt %>%
     skimr::skim()
 ```
 
-
 More precisely, our task is to predict the time needed to process 50, 120, 201, 250, 400 invoices.
-
 
 ```{r}
 #| label: fig-invoices-time
@@ -65,10 +61,9 @@ dt %>%
     scale_x_continuous(breaks = c(50, 120, 201, 250, 400))
 ```
 
-Let us set up a bit of notation. We have a sample of $n = 30$ observations. Let $i$  be the number of the days $i=1,2,\ldots, n$. The variable of interest is the time needed to process the invoices, denoted by $\text{Time}_i$. We have one predictor variable, the number of invoices, denoted by $\text{Invoices}_i$.
+Let us set up a bit of notation. We have a sample of $n = 30$ observations. Let $i$ be the number of the days $i=1,2,\ldots, n$. The variable of interest is the time needed to process the invoices, denoted by $\text{Time}_i$. We have one predictor variable, the number of invoices, denoted by $\text{Invoices}_i$.
 
 As our goal is to create predictions, we will denote the predicted time needed to process the invoices by $\widehat{\text{Time}}_i$.
-
 
 Strategy 1: Use the average processing time for the predictions
 
@@ -76,15 +71,13 @@ $$
 \widehat{\text{Time}}_i^{(1)} = \overline{\text{Time}}
 $$
 
-
 Strategy 2: Use the following linear equation for the predictions
 
 $$
 \widehat{\text{Time}}_i^{(2)} = 0.6 + 0.01 \cdot \text{Invoices}_i
 $$
 
-
-:::{#exr-intercept-only-equation}
+::: {#exr-intercept-only-equation}
 ## Strategy 1
 
 Compute the predicted time $\widehat{Time}_i$ for the first strategy and store it in a new column `Time_predicted_eq1`. Then, compute the residuals (difference between actual and predicted values) and store them in a new column `residuals_1`.
@@ -98,10 +91,9 @@ dt <- dt %>%
         residuals_1 = Time - Time_predicted_1
     )
 ```
-
 :::
 
-:::{#exr-linear-equation}
+::: {#exr-linear-equation}
 ## Strategy 2
 
 Compute the predicted time $\widehat{Time}_i^{(2)}$ for the second strategy and store it in a new column `Time_predicted_2`, compute the residuals and store them in a new column `residuals_2`.
@@ -111,7 +103,6 @@ Compute the predicted time $\widehat{Time}_i^{(2)}$ for the second strategy and 
 
 
 ```
-
 :::
 
 Before we proceed, let us visualize the residuals of the two strategies.
@@ -223,7 +214,6 @@ The previous discussion leads us to a question. Can we find values for the coeff
 
 First, let us visualize the MSE as a function of the coefficients. For this purpose, we will simply calculate the MSE for a grid of values of the coefficients and plot the results (@fig-rss-beta0)
 
-
 Our goal is to find the values of $\beta_0$ and $\beta_1$ that minimize the RSS. The method of least squares provides a formula for the coefficients that minimize the RSS.
 
 First, let us solve a simpler problem. Assume that the predictive equation is
@@ -231,7 +221,6 @@ First, let us solve a simpler problem. Assume that the predictive equation is
 $$
 \widehat{\text{Time}}_i = \hat{\beta}_0
 $$
-
 
 The MSE in this case is much simpler.
 
@@ -268,7 +257,7 @@ $$
 
 Try to find the value of $\hat{\beta}_0$ that minimizes the MSE. **Hint**: Take the derivative of the RSS with respect to $\hat{\beta}_0$, set it to zero and solve for $\hat{\beta}_0$.
 
-:::{.callout-note collapse="true"}
+::: {.callout-note collapse="true"}
 ## Solution for the intercept-only equation
 
 $$
@@ -294,10 +283,9 @@ $$
 The value of $\hat{\beta}_0$ that minimizes the MSE is thus just the average of the observed values of $y_i$.
 :::
 
-If you find the above derivation hard to follow, try to write down
-the RSS for the intercept-only equation with only two observations. Then take the derivative with respect to $\hat{\beta}_0$ and set it to zero.
+If you find the above derivation hard to follow, try to write down the RSS for the intercept-only equation with only two observations. Then take the derivative with respect to $\hat{\beta}_0$ and set it to zero.
 
-:::{.callout-note collapse="true"}
+::: {.callout-note collapse="true"}
 ## Solution for the intercept-only equation with two observations
 
 $$
@@ -326,10 +314,9 @@ y_1 + y_2 - 2\hat{\beta}_0 & = 0 \\
 $$
 
 Because there are now only two observations, their sum divided by two is their arithmetic average.
-
 :::
 
-:::{#exr-no-intercept-equation}
+::: {#exr-no-intercept-equation}
 Consider the following equation for the predictions
 
 $$
@@ -404,7 +391,7 @@ $$
 \end{align*}
 $$
 
-:::{.callout-note collapse="true"}
+::: {.callout-note collapse="true"}
 ## Solution
 
 The first order conditions for the minimum are
@@ -457,12 +444,11 @@ $$
 \end{align*}
 $$
 
-
 The last expression may seem a bit complicated, but it is actually quite simple. It is just the ratio between the empirical covariance between $x_i$ and $y_i$ divided by the variance of $x_i$.
 
 The empirical covariance between $x_i$ and $y_i$ is defined as the sum of the products of the deviations of $x_i$ and $y_i$ from their respective means, divided by the number of observations.
 
-:::{#def-covariance}
+::: {#def-covariance}
 ## Covariance
 
 The covariance between two variables $x$ and $y$ with $n$ values is defined as
@@ -470,10 +456,9 @@ The covariance between two variables $x$ and $y$ with $n$ values is defined as
 $$
 S_{xy} = \frac{1}{n - 1} \sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})
 $$
-
 :::
 
-:::{#def-variance-decomposition}
+::: {#def-variance-decomposition}
 ## Variance decomposition
 
 We have already defined the variance of a variable $x$ as
@@ -488,7 +473,8 @@ $$
 S_x^2 = \frac{n}{n  - 1}(\overline{x_i^2} - \overline{x}^2)
 $$
 :::
-:::{.callout-note .proof collapse="true"}
+
+::: {.callout-note .proof collapse="true"}
 For the proof we just write out the square in the sum and rearrange the terms.
 
 $$
@@ -504,7 +490,7 @@ $$
 $$
 :::
 
-:::{#def-covariance}
+::: {#def-covariance}
 ## Covariance
 
 The covariance between two variables $x$ and $y$ with $n$ values is defined as
@@ -521,7 +507,8 @@ $$
 
 The proof is similar to the proof for the variance decomposition.
 :::
-:::{.callout-note .proof collapse="true"}
+
+::: {.callout-note .proof collapse="true"}
 For the proof we just write out the product in the sum and rearrange the terms.
 
 $$
@@ -588,7 +575,7 @@ dt_neg_cov %>%
 cov(dt_neg_cov$x, dt_neg_cov$y)
 ```
 
-:::{#def-correlation}
+::: {#def-correlation}
 ## Correlation
 
 The correlation between two variables $x$ and $y$ with $n$ values is defined as
@@ -598,7 +585,6 @@ r_{xy} = \frac{S_{xy}}{S_x S_y}
 $$
 
 where $S_{xy}$ is the covariance between $x$ and $y$, and $S_x$ and $S_y$ are the standard deviations of $x$ and $y$ respectively.
-
 :::
 
 Because the covariance is divided by the product of the standard deviations, the correlation is unit-free. Furthermore, the correlation is always between -1 and 1. A correlation of 1 means that the two variables lie on a straight line with a positive slope. A correlation of -1 means that the two variables lie on a straight line with a negative slope. A correlation of 0 means that there is no *linear* association between the two variables.
@@ -643,13 +629,11 @@ Compare your results with the `lm` function in R.
 lm(y_test ~ x_test)
 ```
 
-
 ## OLS using the `lm` function in R
 
 Our primary tool for calculating the least squares coefficients will be the `lm` function in R. The `lm` function takes a formula as its first argument and a data set as its second argument. The formula is of the form `y ~ x` where `y` is the dependent variable and `x` is the independent variable. The data set is a data frame/tibble with the variables `x` and `y`.
 
-Use the `lm` function to compute the OLS coefficients for the `invoices` (dt) data set.
-and the model:
+Use the `lm` function to compute the OLS coefficients for the `invoices` (dt) data set. and the model:
 
 $$
 \widehat{\text{Time}} = \hat{\beta}_0 + \hat{\beta}_1 \text{Invoices}
@@ -688,7 +672,6 @@ dt %>%
   )
 ```
 
-
 ## Plot the OLS predictions
 
 ```{r}
@@ -711,10 +694,9 @@ dt %>%
 
 ## Interpretation of the OLS coefficients
 
-- Scale of the coefficients
-- Interpretation of the intercept
-- Interpretation of the slope
-
+-   Scale of the coefficients
+-   Interpretation of the intercept
+-   Interpretation of the slope
 
 ## Least Squares in Matrix Notation
 
@@ -776,7 +758,6 @@ dt %>%
  head(n = 2)
 ```
 
-
 $$
 2.1 = \hat{\beta}_0 + \hat{\beta}_1 149 \\
 1.8 = \hat{\beta}_0 + \hat{\beta}_1 60
@@ -790,8 +771,7 @@ y <- c(2.1, 1.8)
 solve(M, y)
 ```
 
-You will find that the solution is
-$$
+You will find that the solution is $$
 \begin{align*}
 \hat{\beta}_0 \approx 1.598 \\
 \hat{\beta}_1 \approx 0.0034
@@ -815,8 +795,7 @@ $$
 \end{align*}
 $$
 
-Substituting the solution for $\hat{\beta}_0$ and $\hat{\beta}_1$ that we
-obtained from the first two equations into the third equation, we get
+Substituting the solution for $\hat{\beta}_0$ and $\hat{\beta}_1$ that we obtained from the first two equations into the third equation, we get
 
 ```{r}
 1.597752809 + 0.003370787 * 201
@@ -824,16 +803,13 @@ obtained from the first two equations into the third equation, we get
 
 which is not exactly equal to 2.2, therefore the third equation is not satisfied.
 
-In the general case we cannot hope to solve the system of equations exactly. What we could hope for is to find an approximate solution which is close to the
-actual left hand side values. The least squares method provides such a solution
-by defining a sense of `closeness` between the approximate solution and the actual left hand side values (data) and then finding the approximate solution that minimizes that `closeness` measure.
+In the general case we cannot hope to solve the system of equations exactly. What we could hope for is to find an approximate solution which is close to the actual left hand side values. The least squares method provides such a solution by defining a sense of `closeness` between the approximate solution and the actual left hand side values (data) and then finding the approximate solution that minimizes that `closeness` measure.
 
 ## The Geometry of Least Squares
 
 In the previous section we derived the formula using calculus and an objective function (the RSS) that we wanted to minimize. In this section we will derive the formula using a geometric approach.
 
 First, let us think about the data in terms of vectors in a $\mathbb{R}^n$ dimensional space (where $n$ is the number of observations). For an easier visualization, let us consider the case $n = 2$ (only two observations) so that we can easily plot the data.
-
 
 ```{r}
 #| label: fig-vector-projection
@@ -890,7 +866,6 @@ ggplot(df, aes(x = x, y = y)) +
   ) + 
   theme(legend.position = "none")
 ```
-
 
 What is the projection of the vector $y$ onto the vector $x$? It is the vector that is closest to $y$ and lies on the line spanned by $x$.
 
@@ -985,8 +960,6 @@ plot_ly(x = ~x, y = ~y, z = ~z1, type = "mesh3d", data = xyz1, opacity = 0.2) %>
 
 ```
 
-
-
 In the one-variable case without an intercept term, we could divide the equation by $x^T x$ to get the formula for $\hat{\beta}_1$. This worked because the scalar product of a vector is a scalar. However, here we need to deal with a whole matrix ($X^TX$). We can solve the equation for $\hat{\beta}$ by pre-multiplying both sides by the inverse of $X^T X$.
 
 $$
@@ -1006,7 +979,6 @@ x_fcr <- matrix(
 )
 x_fcr
 ```
-
 
 ```{r}
 

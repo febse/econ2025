@@ -1,0 +1,701 @@
+# Least Squares
+
+The following data set contains information about thirty work days in an accounting company. Every day the company receives invoices from its clients and processes them (e.g. checks them, enters them into the accounting system, etc.). The data set contains the number of invoices processed on each day and the time needed to process them. Our goal is to predict the time needed to process a given number of invoices.
+
+Variables description:
+
+-   `Day` (numeric): day
+-   `Invoices` (numeric): number of invoices
+-   `Time` (numeric): Time needed to process the invoices (hours)
+
+```{r setup, include=FALSE}
+
+# Load the tidyverse packages
+
+if (!require("skimr")) {
+    install.packages("skimr")
+}
+
+if (!require("tidyverse")) {
+    install.packages("tidyverse")
+}
+
+if (!require("ggforce")) {
+  install.packages("ggforce")
+}
+
+if (!require("latex2exp")) {
+    install.packages("latex2exp")
+}
+
+if (!require("plotly")) {
+    install.packages("plotly")
+}
+
+library(tidyverse)
+library(latex2exp)
+library(ggforce)
+library(plotly)
+
+# Download and read the data
+dt <- read.delim("https://github.com/febse/data/raw/refs/heads/main/econ/invoices.txt")
+```
+
+```{r}
+#| label: fig-invoices-time
+#| fig-cap: "Time needed to process the invoices"
+#| code-fold: true
+dt %>%
+  ggplot(aes(x = Invoices, y = Time)) +
+    geom_point() +
+    geom_vline(xintercept = c(50, 120, 201, 250, 400), lty = 2, alpha = 0.5) +
+    scale_x_continuous(breaks = c(50, 120, 201, 250, 400))
+```
+
+
+::: {#exr-no-intercept-equation}
+Consider the following equation for the predictions
+
+$$
+\hat{\text{Time}} = \hat{\beta}_1 \text{Invoices}
+$$
+
+Find the value of $\hat{\beta}_1$ that minimizes the RSS. **Hint**: Take the derivative of the RSS with respect to $\hat{\beta}_1$, set it to zero and solve for $\hat{\beta}_1$.
+
+The residual sum of squares (RSS) in this case is:
+
+$$
+\text{RSS}(\hat{\beta}_1) = \sum_{i = 1}^{n}(\text{Time}_i - \widehat{\text{Time}}_i)^2 = \sum_{i = 1}^{n}(\text{Time}_i - \hat{\beta}_1 \text{Invoices}_i)^2
+$$
+
+In order to avoid long variable names it is convenient to just write $y$ for $\text{Time}$ and $x$ for $\text{Invoices}$. Using this shorthand notation the RSS is
+
+$$
+\text{RSS}(\hat{\beta}_1) = \sum_{i = 1}^{n}(y_i - \hat{y}_i)^2 = \sum_{i = 1}^{n}(y_i - \hat{\beta}_1 x_i)^2
+$$
+
+
+:::
+
+
+:::{#exr-no-intercept-equation-r}
+## No Intercept Implementation
+
+Write a function called `ols_no_intercept` that calculates the OLS estimate for $\hat{\beta}_1$ in the no-intercept
+equation
+
+$$
+\hat{y} = \hat{\beta}_1 x
+$$
+
+```{r}
+# Write your code here 
+
+```
+:::
+
+For the sake of simplicity let us focus on the first two observations in our data
+
+```{r}
+dt %>% head(2)
+```
+
+$$
+\begin{align*}
+\widehat{\text{Time}}_1 & = \hat{\beta}_0 \cdot \text{Invoices}_1 \\
+\widehat{\text{Time}}_2 & = \hat{\beta}_0 \cdot \text{Invoices}_2 \\
+\end{align*}
+$$
+
+With the concrete values from the data this is:
+
+$$
+\begin{align*}
+\widehat{\text{Time}}_1 & = \hat{\beta}_0 \cdot 149 \\
+\widehat{\text{Time}}_2 & = \hat{\beta}_0 \cdot 60 \\
+\end{align*}
+$$
+
+We can write the two equations as vectors
+
+$$
+\begin{pmatrix}
+\widehat{\text{Time}}_1 \\
+\widehat{\text{Time}}_2
+\end{pmatrix}
+= 
+\hat{\beta}_0
+\begin{pmatrix}
+\text{Invoices}_1 \\
+\text{Invoices}_2
+\end{pmatrix}
+$$
+
+As in the previous exercise, it is convinient to replace the variable names with generic ones:
+
+
+$$
+\underbrace{\begin{pmatrix}
+\hat{y}_1 \\
+\hat{y}_2
+\end{pmatrix}}_{\hat{y}}
+= 
+\hat{\beta}_0
+\underbrace{\begin{pmatrix}
+x_1 \\
+x_2
+\end{pmatrix}
+}_{x}
+$$
+
+
+
+```{r}
+#| label: fig-vector-projection
+#| fig-cap: "The projection of the response variable (y) onto the vector x"
+#| code-fold: true
+#| warning: false
+
+X <- c(2, 3) / 4
+Y <- c(1, 0.2)
+
+Y_proj <- X %*% Y / X %*% X * X
+Y_min_Y_proj <- Y_proj - Y
+
+df <- tibble(
+  x = c(0, 0, Y[1], 0, Y[1], Y[2], Y_proj[1], Y_proj[1]),
+  y = c(0, 0, Y[2], 0, X[2], Y[2], Y_proj[2], Y_proj[2]),
+  xend = c(X[1], Y[1], Y_proj[1], Y_proj[1], NA, NA, NA, NA),
+  yend = c(X[2], Y[2], Y_proj[2], Y_proj[2], NA, NA, NA, NA),
+  color = c('A', 'B', 'C', 'D', NA, NA, NA, NA)
+)
+
+ggplot(df, aes(x = x, y = y)) +
+  geom_segment(
+    aes(
+      xend = xend, yend = yend, 
+      color = color
+      ),
+      arrow = arrow(length = unit(0.25,"cm")
+    )
+  ) + 
+  annotate(
+    geom = "text",
+    label = "x",
+    x = 0.51, y = 0.77
+  ) + 
+  annotate(
+    geom = "text",
+    label = "bx",
+    x = 0.35, y = 0.58
+  ) +
+  annotate(
+    geom = "text",
+    label = "y",
+    x = 1.02, y = 0.19
+  ) + 
+  annotate(
+    geom = "text",
+    label = "bx - y",
+    x = 0.76, y = 0.42
+  ) + 
+  labs(
+    x = "n1",
+    y = "n2"
+  ) + 
+  theme(legend.position = "none")
+```
+
+
+## The one variable case with an intercept
+
+Now let us consider the case where we have two variables, $\text{Invoices}_i$ and $\text{Time}_i$. We want to find the values of $\hat{\beta}_0$ and $\hat{\beta}_1$ that minimize the RSS.
+
+The prediction equation is
+
+$$
+\hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1 x_i
+$$
+
+The RSS is again, the sum of the squared differences between observations ($y_i$) and predictions ($\hat{y}_i$).
+
+$$
+\begin{align*}
+\text{RSS}(\hat{\beta}_0, \hat{\beta}_1) & = \sum_{i=1}^n (y_i - \hat{y}_i)^2 \\
+  & = \sum_{i=1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i)^2
+\end{align*}
+$$
+
+This time the RSS depends on two variables ($\hat{\beta}_0$ and $\hat{\beta}_1$) and is a 3D surface. Again, we can set up two sequences of values for the two coefficients, calculate the RSS for each pair of values and plot the results [@fig-rss-3d].
+
+```{r}
+#| label: fig-rss-3d
+#| fig-cap: "RSS as a function of the coefficients"
+#| code-fold: true
+
+# NOTE: this code here is only for illustration purposes, you don't need to study it or understand it for the course
+# Create a grid of values for beta_hat_0 and beta_hat_1
+
+beta_hat_0 <- seq(0.4, 1, length.out = 50)
+beta_hat_1 <- seq(0.001, 0.015, length.out = 50)
+
+rss_two_coeffs <- expand.grid(beta_hat_0 = beta_hat_0, beta_hat_1 = beta_hat_1) %>%
+  mutate(
+    # Compute the RSS for each combination of beta_hat_0 and beta_hat_1
+    RSS = map2_dbl(beta_hat_0, beta_hat_1, ~{
+      Time_predicted <- .x + .y * dt$Invoices
+      sum((dt$Time - Time_predicted)^2)
+    })
+  )
+
+fig <- plot_ly(
+  x=beta_hat_0, 
+  y=beta_hat_1, 
+  z = matrix(rss_two_coeffs$RSS, nrow = length(beta_hat_0), ncol = length(beta_hat_1)),
+  ) %>% 
+    add_surface() %>% 
+    layout(
+        scene = list(
+          xaxis = list(title = "beta_hat_0"),
+          yaxis = list(title = "beta_hat_1"),
+          zaxis = list(title = "RSS")
+        )
+    )
+
+fig
+```
+
+$$
+\begin{align*}
+\frac{\partial}{\partial \hat{\beta}_0} \text{RSS}(\hat{\beta}_0, \hat{\beta}_1) & = -2 \sum_{i=1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i) = 0 \\
+\frac{\partial}{\partial \hat{\beta}_1} \text{RSS}(\hat{\beta}_0, \hat{\beta}_1) & = -2 \sum_{i=1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i) x_i = 0
+\end{align*}
+$$
+
+::: {.callout-note collapse="true"}
+## Solution
+
+The first order conditions for the minimum are
+
+$$
+\begin{align*}
+\frac{\partial}{\partial \hat{\beta}_0} \text{RSS}(\hat{\beta}_0, \hat{\beta}_1) & = -2 \sum_{i=1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i) = 0 \\
+\frac{\partial}{\partial \hat{\beta}_1} \text{RSS}(\hat{\beta}_0, \hat{\beta}_1) & = -2 \sum_{i=1}^n (y_i - \hat{\beta}_0 - \hat{\beta}_1 x_i) x_i = 0
+\end{align*}
+$$
+
+The first equation gives
+
+$$
+\begin{align*}
+\sum_{i=1}^n y_i - \hat{\beta}_0 n - \hat{\beta}_1 \sum_{i=1}^n x_i & = 0 \\
+\hat{\beta}_0 n + \hat{\beta}_1 \sum_{i=1}^n x_i & = \sum_{i=1}^n y_i \\
+\hat{\beta}_0 & = \overline{y} - \hat{\beta}_1 \overline{x}
+\end{align*}
+$$
+
+The second equation gives
+
+$$
+\begin{align*}
+\sum_{i=1}^n y_i x_i - \hat{\beta}_0 \sum_{i=1}^n x_i - \hat{\beta}_1 \sum_{i=1}^n x_i^2 & = 0 \\
+\hat{\beta}_0 \sum_{i=1}^n x_i + \hat{\beta}_1 \sum_{i=1}^n x_i^2 & = \sum_{i=1}^n y_i x_i \\
+\hat{\beta}_0 & = \overline{y} - \hat{\beta}_1 \overline{x}
+\end{align*}
+$$
+
+Substituting the expression for $\hat{\beta}_0$ in the second equation, we get
+
+$$
+\begin{align*}
+(\overline{y} - \hat{\beta}_1 \overline{x}) \sum_{i=1}^n x_i + \hat{\beta}_1 \sum_{i=1}^n x_i^2 & = \sum_{i=1}^n y_i x_i \\
+\overline{y} \sum_{i=1}^n x_i - \hat{\beta}_1 \overline{x} \sum_{i=1}^n x_i + \hat{\beta}_1 \sum_{i=1}^n x_i^2 & = \sum_{i=1}^n y_i x_i \\
+\hat{\beta}_1 \sum_{i=1}^n x_i^2 & = \sum_{i=1}^n y_i x_i - \overline{y} \sum_{i=1}^n x_i + \hat{\beta}_1 \overline{x} \sum_{i=1}^n x_i \\
+\hat{\beta}_1 & = \frac{\sum_{i=1}^n y_i x_i - \overline{y} \sum_{i=1}^n x_i}{\sum_{i=1}^n x_i^2 - \overline{x} \sum_{i=1}^n x_i}
+\end{align*}
+$$
+:::
+
+Simplifying the expression, we get
+
+$$
+\begin{align*}
+\hat{\beta}_1 & = \frac{\overline{x y} - \overline{x} \cdot \overline{y}}{\overline{x^2} - \overline{x}^2} \\
+\hat{\beta}_0 & = \overline{y} - \hat{\beta}_1 \overline{x}
+\end{align*}
+$$
+
+The last expression may seem a bit complicated, but it is actually quite simple. It is just the ratio between the empirical covariance between $x_i$ and $y_i$ divided by the variance of $x_i$.
+
+The empirical covariance between $x_i$ and $y_i$ is defined as the sum of the products of the deviations of $x_i$ and $y_i$ from their respective means, divided by the number of observations.
+
+## Exercise
+
+Write a function that takes two vectors `x` and `y` as arguments and returns the OLS coefficients $\hat{\beta}_0$ and $\hat{\beta}_1$ using the formulas above.
+
+```{r}
+ols_two_variables <- function(x, y){
+    # Compute the coefficients
+
+}
+
+# Now call your function with some vectors
+```
+
+Test your function using the following data set.
+
+```{r}
+set.seed(123)
+
+x_test <- rnorm(100)
+y_test <- 1 + 2 * x_test + rnorm(100)
+
+# print(ols_two_variables(x_test, y_test))
+# print(lm(y_test ~ x_test))
+```
+
+Compare your results with the `lm` function in R.
+
+```{r}
+# Uncomment the following line to compare your results with the lm function
+
+# ols_two_variables(x, y)
+lm(y_test ~ x_test)
+```
+
+## OLS using the `lm` function in R
+
+Our primary tool for calculating the least squares coefficients will be the `lm` function in R. The `lm` function takes a formula as its first argument and a data set as its second argument. The formula is of the form `y ~ x` where `y` is the dependent variable and `x` is the independent variable. The data set is a data frame/tibble with the variables `x` and `y`.
+
+Use the `lm` function to compute the OLS coefficients for the `invoices` (dt) data set. and the model:
+
+$$
+\widehat{\text{Time}} = \hat{\beta}_0 + \hat{\beta}_1 \text{Invoices}
+$$
+
+```{r}
+# Uncomment the following two lines to fit the model
+
+fit_OLS <- lm(Time ~ Invoices, data = dt)
+fit_OLS
+```
+
+```{r}
+# Compute the predicted values for the days (observations) in the sample
+
+predict(fit_OLS)
+```
+
+```{r}
+# Compute the RSS for the OLS model
+
+dt <- dt %>%
+    mutate(
+      Time_predicted_OLS = predict(fit_OLS),
+      residuals_OLS = Time - Time_predicted_OLS
+    )
+```
+
+```{r}
+# Compute the RSS and MSE for the OLS model
+
+dt %>%
+  summarize(
+    RSS_OLS = sum(residuals_OLS^2),
+    MSE_OLS = mean(residuals_OLS^2)
+  )
+```
+
+## Plot the OLS predictions
+
+```{r}
+# Plot the predictions
+
+dt %>%
+    ggplot(aes(x = Invoices, y = Time)) +
+    geom_point() +
+    geom_line(aes(y = Time_predicted_OLS), color = "steelblue4")
+```
+
+```{r}
+# Plot the predictions using geom_smooth
+
+dt %>%
+    ggplot(aes(x = Invoices, y = Time)) +
+    geom_point() +
+    geom_smooth(method = "lm")
+```
+
+## Interpretation of the OLS coefficients
+
+-   Scale of the coefficients
+-   Interpretation of the intercept
+-   Interpretation of the slope
+
+## Least Squares in Matrix Notation
+
+The previous discussion can be summarized in matrix notation and you will commonly find it in this form in textbooks and articles.
+
+For the one variable case, the prediction equation, written for all observations is
+
+$$
+\begin{align*}
+\hat{y}_1 & = \hat{\beta}_0 + \hat{\beta}_1 x_1 \\
+\hat{y}_2 & = \hat{\beta}_0 + \hat{\beta}_1 x_2 \\
+\vdots & \\
+\hat{y}_n & = \hat{\beta}_0 + \hat{\beta}_1 x_n \\
+\end{align*}
+$$
+
+This can be written in matrix notation as
+
+$$
+\underbrace{\begin{bmatrix}
+\hat{y}_1 \\
+\hat{y}_2 \\
+\vdots \\
+\hat{y}_n
+\end{bmatrix}
+}_{\hat{y}_{n \times 1}}
+=
+\underbrace{\begin{bmatrix}
+1 & x_1 \\
+1 & x_2 \\
+\vdots & \vdots \\
+1 & x_n
+\end{bmatrix}}_{X_{n \times 2}}
+\underbrace{\begin{bmatrix}
+\hat{\beta}_0 \\
+\hat{\beta}_1
+\end{bmatrix}}_{\hat{\beta}_{2 \times 1}}
+$$
+
+The matrix $X$ is called the design matrix and contains the predictor terms. The vector $\hat{\beta}$ contains the coefficients that we want to estimate. The vector $\hat{y}$ contains the predicted values.
+
+You can extract the design matrix from the `fit_OLS` object using the `model.matrix` function.
+
+```{r}
+fit_OLS <- lm(Time ~ Invoices, data = dt)
+model.matrix(fit_OLS)
+```
+
+The colum of ones in the design matrix is the intercept term. The other column is the predictor term (the number of invoices in our example).
+
+$$
+\hat{y} = X \hat{\beta}
+$$
+
+You can think about the least squares as finding a solution to a system of linear equations where the number of equations is greater than the number of unknowns. Let us focus on a case with one variable and two observations (the first two from the `invoices` (dt) data set).
+
+```{r}
+dt %>%
+ head(n = 2)
+```
+
+$$
+2.1 = \hat{\beta}_0 + \hat{\beta}_1 149 \\
+1.8 = \hat{\beta}_0 + \hat{\beta}_1 60
+$$
+
+In this system of equations you have two unknowns, $\hat{\beta}_0$ and $\hat{\beta}_1$, and two equations. Therefore, you can actually solve for the unknowns (left as an exercise).
+
+```{r}
+M <- matrix(c(1, 149, 1, 60), ncol = 2, byrow = TRUE)
+y <- c(2.1, 1.8)
+solve(M, y)
+```
+
+You will find that the solution is $$
+\begin{align*}
+\hat{\beta}_0 \approx 1.598 \\
+\hat{\beta}_1 \approx 0.0034
+\end{align*}
+$$
+
+Let's look at the first three observations in the `invoices` (dt) data set.
+
+```{r}
+dt %>%
+ head(n = 3)
+```
+
+The equations for the first three observations are
+
+$$
+\begin{align*}
+2.1 & = \hat{\beta}_0 + \hat{\beta}_1 149 \\
+1.8 & = \hat{\beta}_0 + \hat{\beta}_1 60 \\
+2.2 & = \hat{\beta}_0 + \hat{\beta}_1 201
+\end{align*}
+$$
+
+Substituting the solution for $\hat{\beta}_0$ and $\hat{\beta}_1$ that we obtained from the first two equations into the third equation, we get
+
+```{r}
+1.597752809 + 0.003370787 * 201
+```
+
+which is not exactly equal to 2.2, therefore the third equation is not satisfied.
+
+In the general case we cannot hope to solve the system of equations exactly. What we could hope for is to find an approximate solution which is close to the actual left hand side values. The least squares method provides such a solution by defining a sense of `closeness` between the approximate solution and the actual left hand side values (data) and then finding the approximate solution that minimizes that `closeness` measure.
+
+
+What is the projection of the vector $y$ onto the vector $x$? It is the vector that is closest to $y$ and lies on the line spanned by $x$.
+
+Two vectors are said to be orthogonal if their dot product is zero. The dot product of two vectors $x$ and $y$ is defined as
+
+$$
+x \cdot y = \sum_{i=1}^n x_i y_i
+$$
+
+Another way to write the dot product is as a matrix product:
+
+$$
+x \cdot y = x^T y
+$$
+
+where $x^T$ is the transpose of $x$ (meaning that $x^T$ is a row vector).
+
+The least squares method can be thought of as finding the vector $y_{\text{proj}} = \hat{\beta}_1 x$ that is closest to $y$ and lies on the line spanned by $x$. The vector $y - y_{proj}$ is the vector that is orthogonal to $x$ and has the smallest length.
+
+The vector $r = y - y_{\text{proj}}$ is called the residual vector. The length of the residual vector is the square root of the sum of the squares of its elements, which is the RSS that we have been trying to minimize earlier.
+
+The residual vector will be shortest when it is orthogonal to $x$, so the question now boils down to finding a scalar $\hat{\beta}_1$ such that the residual vector is orthogonal to $x$.
+
+The condition that the residual vector is orthogonal to $x$ is that the dot product between the two vectors is equal to zero.
+
+$$
+\begin{align*}
+x^T(y - \hat{\beta}_1 x) = 0 \\
+x^T y - \hat{\beta}_1 x^T x = 0 \\
+\hat{\beta}_1 x^T x = x^T y \\
+\hat{\beta}_1 = \frac{x^T y}{x^T x}
+\end{align*}
+$$
+
+You can rewrite the dot products as a sum to see the similarity to the formulas we derived using calculus.
+
+$$
+\begin{align*}
+x^T y = \sum_{i=1}^n x_i y_i \\
+x^T x = \sum_{i=1}^n x_i^2
+\end{align*}
+$$
+
+$$
+\hat{\beta}_1 = \frac{\sum_{i=1}^n x_i y_i}{\sum_{i=1}^n x_i^2} = \frac{n \overline{x y}}{n \overline{x^2}} = \frac{\overline{x y}}{\overline{x^2}}
+$$
+
+In the general case of multiple variables, the projection of the outcome vector $y$ onto the space spanned by all linear combinations of the predictor variables $X$ is
+
+$$
+\begin{align*}
+X^T(y - X \hat{\beta}) = 0 \\
+X^T y - X^T X \hat{\beta} = 0 \\
+X^T X \hat{\beta} = X^T y \\
+\end{align*}
+$$
+
+:::{.grid}
+:::{.g-col-12}
+
+```{r}
+#| echo: false
+
+x <- seq(from=-10, to=10, by=1)
+y <- seq(from=-10, to=10, by=1)
+z1 <- x + y #For the first plane
+
+origin <- tibble(x = x, y = y, z = z1)
+# prepare all combination of x and y, and calculate z1
+xyz1 <- tidyr::crossing(x, y) %>%
+  mutate(z1 = 0-x-y)
+
+plot_ly(x = ~x, y = ~y, z = ~z1, type = "mesh3d", data = xyz1, opacity = 0.2) %>%
+  add_trace(
+    x = c(0, -3), y = c(0, 10), z = c(0, 10),
+    type = 'scatter3d', mode = 'lines',
+    line = list(color = 'red', width = 5)
+  ) %>%
+  add_trace(
+    x = c(0, -10), y = c(0, -10), z = c(0, 20),
+    type = 'scatter3d', mode = 'lines',
+    line = list(color = 'black', width = 5)
+  ) %>%
+  add_trace(
+    x = c(0, -4), y = c(0, 2), z = c(0, 2),
+    type = 'scatter3d', mode = 'lines',
+    line = list(color = 'black', width = 5)
+  ) %>%
+  layout(scene = list(
+    xaxis = list(title = "n1"),
+    yaxis = list(title = 'n2'),
+    zaxis = list(title = 'n3')
+  )) %>%
+  hide_legend()
+
+```
+:::
+:::
+
+In the one-variable case without an intercept term, we could divide the equation by $x^T x$ to get the formula for $\hat{\beta}_1$. This worked because the scalar product of a vector is a scalar. However, here we need to deal with a whole matrix ($X^TX$). We can solve the equation for $\hat{\beta}$ by pre-multiplying both sides by the inverse of $X^T X$.
+
+$$
+\begin{align*}
+\hat{\beta} & = (X^T X)^{-1} X^T y
+\end{align*}
+$$
+
+The last operation requires that inverse of $X^T X$ exists. This is the case if the columns of $X$ are linearly independent. If some of the columns of $X$ are linearly dependent, the matrix $X^T X$ will be singular and its inverse will not exist.
+
+```{r}
+# Create t full column rank matrix
+x_fcr <- matrix(
+  c(1, 149, 1, 60, 1, 201),
+  ncol = 2,
+  byrow = TRUE
+)
+x_fcr
+```
+
+```{r}
+
+# Compute the inverse of the matrix. The %*% operator is the matrix multiplication operator in R
+
+solve(t(x_fcr) %*% x_fcr)
+```
+
+```{r}
+# To veritfy that the inverse is correct, multiply the matrix with its inverse
+
+t(x_fcr) %*% x_fcr %*% solve(t(x_fcr) %*% x_fcr)
+```
+
+What happens if we have a matrix that is not full column rank?
+
+```{r}
+x_rcr <- matrix(
+  c(1, 149, 2, 1, 60, 2, 1, 149, 2),
+  ncol = 3,
+  byrow = TRUE
+)
+x_rcr
+```
+
+```{r}
+# solve(t(x_rcr) %*% x_rcr)
+```
+
+In the case of a matrix that is not full column rank, the inverse of the matrix does not exist, and `solve` will throw an error. We say that there is (perfect) multicollinearity in predictors.
+
+The same will happen if some column is a linear combination (e.g. the sum) of some other columns.
+
+```{r}
+x_rcr1 <- cbind(x_fcr, 0.2 * x_fcr[, 1] + 5 * x_fcr[, 2])
+x_rcr1
+```
+
+```{r}
+
+# solve(t(x_rcr1) %*% x_rcr1)
+```
