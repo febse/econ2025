@@ -52,7 +52,6 @@ dt %>%
     scale_x_continuous(breaks = c(50, 120, 201, 250, 400))
 ```
 
-
 ::: {#exr-no-intercept-equation}
 Consider the following equation for the predictions
 
@@ -73,24 +72,34 @@ In order to avoid long variable names it is convenient to just write $y$ for $\t
 $$
 \text{RSS}(\hat{\beta}_1) = \sum_{i = 1}^{n}(y_i - \hat{y}_i)^2 = \sum_{i = 1}^{n}(y_i - \hat{\beta}_1 x_i)^2
 $$
-
-
 :::
 
-
-:::{#exr-no-intercept-equation-r}
+::: {#exr-no-intercept-equation-r}
 ## No Intercept Implementation
 
-Write a function called `ols_no_intercept` that calculates the OLS estimate for $\hat{\beta}_1$ in the no-intercept
-equation
+Write a function called `ols_no_intercept` that calculates the OLS estimate for $\hat{\beta}_1$ in the no-intercept equation
 
 $$
 \hat{y} = \hat{\beta}_1 x
 $$
 
 ```{r}
-# Write your code here 
+osl_no_intercept <- function(y, x) {
+    # Write your code here 
+}
 
+# Test it by running it with the following 
+
+set.seed(3123)
+x_test <- rnorm(10)
+y_test <- 3 * x_test + rnorm(10)
+
+# ols_no_intercept(y = y_test, x = x_test)
+
+# A correct implementation will give you the same
+# result as the lm function
+
+lm(y_test ~ 0 + x_test)
 ```
 :::
 
@@ -133,7 +142,6 @@ $$
 
 As in the previous exercise, it is convinient to replace the variable names with generic ones:
 
-
 $$
 \underbrace{\begin{pmatrix}
 \hat{y}_1 \\
@@ -147,8 +155,6 @@ x_2
 \end{pmatrix}
 }_{x}
 $$
-
-
 
 ```{r}
 #| label: fig-vector-projection
@@ -205,7 +211,6 @@ ggplot(df, aes(x = x, y = y)) +
   ) + 
   theme(legend.position = "none")
 ```
-
 
 ## The one variable case with an intercept
 
@@ -334,24 +339,21 @@ The empirical covariance between $x_i$ and $y_i$ is defined as the sum of the pr
 Write a function that takes two vectors `x` and `y` as arguments and returns the OLS coefficients $\hat{\beta}_0$ and $\hat{\beta}_1$ using the formulas above.
 
 ```{r}
-ols_two_variables <- function(x, y){
+ols_two_variables <- function(y, x){
     # Compute the coefficients
-
+    
 }
 
-# Now call your function with some vectors
+# Now call your function with the same x_test and y_test as before
+
+# print(ols_two_variables(x_test, y_test))
+
 ```
 
 Test your function using the following data set.
 
 ```{r}
-set.seed(123)
 
-x_test <- rnorm(100)
-y_test <- 1 + 2 * x_test + rnorm(100)
-
-# print(ols_two_variables(x_test, y_test))
-# print(lm(y_test ~ x_test))
 ```
 
 Compare your results with the `lm` function in R.
@@ -360,7 +362,7 @@ Compare your results with the `lm` function in R.
 # Uncomment the following line to compare your results with the lm function
 
 # ols_two_variables(x, y)
-lm(y_test ~ x_test)
+# lm(y_test ~ x_test)
 ```
 
 ## OLS using the `lm` function in R
@@ -539,7 +541,6 @@ which is not exactly equal to 2.2, therefore the third equation is not satisfied
 
 In the general case we cannot hope to solve the system of equations exactly. What we could hope for is to find an approximate solution which is close to the actual left hand side values. The least squares method provides such a solution by defining a sense of `closeness` between the approximate solution and the actual left hand side values (data) and then finding the approximate solution that minimizes that `closeness` measure.
 
-
 What is the projection of the vector $y$ onto the vector $x$? It is the vector that is closest to $y$ and lies on the line spanned by $x$.
 
 Two vectors are said to be orthogonal if their dot product is zero. The dot product of two vectors $x$ and $y$ is defined as
@@ -596,9 +597,8 @@ X^T X \hat{\beta} = X^T y \\
 \end{align*}
 $$
 
-:::{.grid}
-:::{.g-col-12}
-
+:::: grid
+::: g-col-12
 ```{r}
 #| echo: false
 
@@ -636,7 +636,7 @@ plot_ly(x = ~x, y = ~y, z = ~z1, type = "mesh3d", data = xyz1, opacity = 0.2) %>
 
 ```
 :::
-:::
+::::
 
 In the one-variable case without an intercept term, we could divide the equation by $x^T x$ to get the formula for $\hat{\beta}_1$. This worked because the scalar product of a vector is a scalar. However, here we need to deal with a whole matrix ($X^TX$). We can solve the equation for $\hat{\beta}$ by pre-multiplying both sides by the inverse of $X^T X$.
 
