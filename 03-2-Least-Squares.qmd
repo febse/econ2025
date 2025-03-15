@@ -140,7 +140,7 @@ $$
 \end{pmatrix}
 $$
 
-As in the previous exercise, it is convinient to replace the variable names with generic ones:
+As in the previous exercise, it is convenient to replace the variable names with generic ones:
 
 $$
 \underbrace{\begin{pmatrix}
@@ -155,6 +155,7 @@ x_2
 \end{pmatrix}
 }_{x}
 $$
+
 
 ```{r}
 #| label: fig-vector-projection
@@ -211,6 +212,183 @@ ggplot(df, aes(x = x, y = y)) +
   ) + 
   theme(legend.position = "none")
 ```
+
+## The two variables case
+
+Until now, we have considered the case where we have only one variable. If we add another variable, for example the number of the day (column `Day`), the prediction equation becomes
+
+$$
+\widehat{\text{Time}} = \hat{\beta}_1 \text{Invoices} + \hat{\beta}_2 \text{Day}
+$$
+
+or in a more generic form
+
+$$
+\hat{y} = \hat{\beta}_1 x_{1} + \hat{\beta}_2 x_{2}
+$$
+
+We can write this equation for every observation in the data set:
+
+$$
+\begin{align*}
+\hat{y}_1 & = \hat{\beta}_1 x_{1,1} + \hat{\beta}_2 x_{2,1} \\
+\hat{y}_2 & = \hat{\beta}_1 x_{1,2} + \hat{\beta}_2 x_{2,2} \\
+\vdots & \\
+\hat{y}_n & = \hat{\beta}_1 x_{1,n} + \hat{\beta}_2 x_{2,n} \\
+\end{align*}
+$$
+
+For example, the first three observations in the data set are
+
+```{r}
+dt %>% head(3)
+```
+
+$$
+\begin{align*}
+\hat{y}_1 & = \hat{\beta}_1 \cdot 149 + \hat{\beta}_2 \cdot 1 \\
+\hat{y}_2 & = \hat{\beta}_1 \cdot 60 + \hat{\beta}_2 \cdot 2 \\
+\hat{y}_3 & = \hat{\beta}_1 \cdot 188 + \hat{\beta}_2 \cdot 3 \\
+\end{align*}
+$$
+
+We can write the same equations in matrix form (for the first three observations for brevity):
+
+$$
+\begin{pmatrix}
+\hat{y}_1 \\
+\hat{y}_2 \\
+\hat{y}_3
+\end{pmatrix}
+=
+\begin{pmatrix}
+149 & 1 \\
+60 & 2 \\
+188 & 3
+\end{pmatrix}
+\begin{pmatrix}
+\hat{\beta}_1 \\
+\hat{\beta}_2
+\end{pmatrix}
+$$
+
+To further simplify the notation, we can write the matrix of predictors as $X$ and the vector of coefficients as $\hat{\beta}$:
+
+$$
+\hat{y} = X \hat{\beta}
+$$
+
+At this point it is helpful to visualize the predictions that this model makes. With only 3 observations, we can plot the two columns of the matrix $X$ and the vector $y$ in a 3D plot (@fig-two-vars-plane-3d). Because all preductions are just a linear combination of the two columns of $X$, these predictions will lie on a plane through the origin (0, 0, 0).
+
+Look at the following artificial examples:
+
+$$
+\underbrace{\begin{pmatrix} -3 \\ 10 \\ 12 \end{pmatrix} }_{y}
+= \hat{\beta}_1 \underbrace{\begin{pmatrix} -10 \\ -10 \\ 20 \end{pmatrix}}_{x_1} + \hat{\beta}_2 \underbrace{\begin{pmatrix} -4 \\ 2 \\ 2 \end{pmatrix}}_{x_2}
+$$
+
+The residual vector $r = y - X \hat{\beta}$ is:
+
+$$
+r = \begin{pmatrix} -3 \\ 10 \\ 12 \end{pmatrix} - \begin{pmatrix} -10 \\ -10 \\ 20 \end{pmatrix} \hat{\beta}_1 - \begin{pmatrix} -4 \\ 2 \\ 2 \end{pmatrix} \hat{\beta}_2 = \begin{pmatrix} -3 + 10 \hat{\beta}_1 + 4 \hat{\beta}_2 \\ 10 + 10 \hat{\beta}_1 - 2 \hat{\beta}_2 \\ 12 - 20 \hat{\beta}_1 - 2 \hat{\beta}_2 \end{pmatrix}
+$$
+
+This vector must be orthogonal to the plane spanned by the predictors, because we are looking for the **shortest** distance from the vector $y$ to the plane. The vector $r$ is orthogonal to the plane spanned by the predictors if the dot product between $r$ and both predictors is zero.
+
+$$
+\begin{align*}
+x_1^T r & = 0 \\
+x_2^T r & = 0
+\end{align*}
+$$
+
+$$
+\begin{align*}
+\begin{pmatrix} -10 & -10 & 20 \end{pmatrix} \begin{pmatrix} -3 + 10 \hat{\beta}_1 + 4 \hat{\beta}_2 \\ 10 + 10 \hat{\beta}_1 - 2 \hat{\beta}_2 \\ 12 - 20 \hat{\beta}_1 - 2 \hat{\beta}_2 \end{pmatrix} & = 0 \\
+\begin{pmatrix} -4 & 2 & 2 \end{pmatrix} \begin{pmatrix} -3 + 10 \hat{\beta}_1 + 4 \hat{\beta}_2 \\ 10 + 10 \hat{\beta}_1 - 2 \hat{\beta}_2 \\ 12 - 20 \hat{\beta}_1 - 2 \hat{\beta}_2 \end{pmatrix} & = 0
+\end{align*}
+$$
+
+Now we must solve these two equations for $\hat{\beta}_1$ and $\hat{\beta}_2$ which is tedious but quite straightforward. First, calculate the dot products:
+
+$$
+\begin{align*}
+-10(-3 + 10 \hat{\beta}_1 + 4 \hat{\beta}_2) - 10(10 + 10 \hat{\beta}_1 - 2 \hat{\beta}_2) + 20(12 - 20 \hat{\beta}_1 - 2 \hat{\beta}_2) & = 0 \\
+-4(-3 + 10 \hat{\beta}_1 + 4 \hat{\beta}_2) + 2(10 + 10 \hat{\beta}_1 - 2 \hat{\beta}_2) + 2(12 - 20 \hat{\beta}_1 - 2 \hat{\beta}_2) & = 0
+\end{align*}
+$$
+
+After that, simplify the equations and solve them for $\hat{\beta}_1$ and $\hat{\beta}_2$.
+
+
+
+
+
+
+::: grid
+::: g-col-12
+```{r}
+#| echo: false
+#| label: fig-two-vars-plane-3d
+#| fig-cap: "The target (response) vector y (in red) and the plane spanned by the predictors (in blue)"
+
+x <- seq(from=-10, to=10, by=1)
+y <- seq(from=-10, to=10, by=1)
+z1 <- x + y #For the first plane
+
+origin <- tibble(x = x, y = y, z = z1)
+# prepare all combination of x and y, and calculate z1
+xyz1 <- tidyr::crossing(x, y) %>%
+  mutate(z1 = 0-x-y)
+
+plot_ly(x = ~x, y = ~y, z = ~z1, type = "mesh3d", data = xyz1, opacity = 0.2) %>%
+  add_trace(
+    x = c(0, -3), y = c(0, 10), z = c(0, 12),
+    type = 'scatter3d', mode = 'lines',
+    line = list(color = 'red', width = 5)
+  ) %>%
+  add_trace(
+    x = c(0, -10), y = c(0, -10), z = c(0, 20),
+    type = 'scatter3d', mode = 'lines',
+    line = list(color = 'black', width = 5)
+  ) %>%
+  add_trace(
+    x = c(0, -4), y = c(0, 2), z = c(0, 2),
+    type = 'scatter3d', mode = 'lines',
+    line = list(color = 'black', width = 5)
+  ) %>%
+  add_trace(
+    x = c(-3, -9.3333), y = c(10, 3.6666), z = c(12, 5.6666),
+    type = 'scatter3d', mode = 'lines',
+    line = list(color = 'blue', width = 5)
+  ) %>%
+  layout(scene = list(
+    xaxis = list(title = "n1"),
+    yaxis = list(title = 'n2'),
+    zaxis = list(title = 'n3')
+  )) %>%
+  hide_legend()
+
+# Draw an arrow from the plane to the target vector
+
+```
+:::
+:::
+
+```{r}
+x1 <- c(-10, -10, 20)
+x2 <- c(-4, 2, 2)
+y <- c(-3, 10, 12)
+
+fit <- lm(y ~ 0 + x1 + x2)
+fit$coefficients["x1"] * x1 + fit$coefficients["x2"] * x2
+```
+
+```{r}
+lm(z1 ~ x + y) # Fit a plane to the data
+```
+
+
 
 ## The one variable case with an intercept
 
@@ -309,7 +487,7 @@ $$
 \end{align*}
 $$
 
-Substituting the expression for $\hat{\beta}_0$ in the second equation, we get
+Substituting the expression for $\hat{\beta}_0$ in the second equation, we get:
 
 $$
 \begin{align*}
@@ -321,7 +499,7 @@ $$
 $$
 :::
 
-Simplifying the expression, we get
+Further simplification gives:
 
 $$
 \begin{align*}
@@ -597,46 +775,6 @@ X^T X \hat{\beta} = X^T y \\
 \end{align*}
 $$
 
-:::: grid
-::: g-col-12
-```{r}
-#| echo: false
-
-x <- seq(from=-10, to=10, by=1)
-y <- seq(from=-10, to=10, by=1)
-z1 <- x + y #For the first plane
-
-origin <- tibble(x = x, y = y, z = z1)
-# prepare all combination of x and y, and calculate z1
-xyz1 <- tidyr::crossing(x, y) %>%
-  mutate(z1 = 0-x-y)
-
-plot_ly(x = ~x, y = ~y, z = ~z1, type = "mesh3d", data = xyz1, opacity = 0.2) %>%
-  add_trace(
-    x = c(0, -3), y = c(0, 10), z = c(0, 10),
-    type = 'scatter3d', mode = 'lines',
-    line = list(color = 'red', width = 5)
-  ) %>%
-  add_trace(
-    x = c(0, -10), y = c(0, -10), z = c(0, 20),
-    type = 'scatter3d', mode = 'lines',
-    line = list(color = 'black', width = 5)
-  ) %>%
-  add_trace(
-    x = c(0, -4), y = c(0, 2), z = c(0, 2),
-    type = 'scatter3d', mode = 'lines',
-    line = list(color = 'black', width = 5)
-  ) %>%
-  layout(scene = list(
-    xaxis = list(title = "n1"),
-    yaxis = list(title = 'n2'),
-    zaxis = list(title = 'n3')
-  )) %>%
-  hide_legend()
-
-```
-:::
-::::
 
 In the one-variable case without an intercept term, we could divide the equation by $x^T x$ to get the formula for $\hat{\beta}_1$. This worked because the scalar product of a vector is a scalar. However, here we need to deal with a whole matrix ($X^TX$). We can solve the equation for $\hat{\beta}$ by pre-multiplying both sides by the inverse of $X^T X$.
 
