@@ -1,3 +1,9 @@
+---
+format: 
+  html:
+    page-layout: full
+---
+
 # Least Squares
 
 The following data set contains information about thirty work days in an accounting company. Every day the company receives invoices from its clients and processes them (e.g. checks them, enters them into the accounting system, etc.). The data set contains the number of invoices processed on each day and the time needed to process them. Our goal is to predict the time needed to process a given number of invoices.
@@ -84,21 +90,17 @@ $$
 $$
 
 ```{r}
-osl_no_intercept <- function(y, x) {
-    # Write your code here 
-}
-
-# Test it by running it with the following 
+# The following code generates two vectors x_test and y_test
+# Compute the OLS estimate for beta_1 (no intercept) using the formulas above
+# using the vectors x_test and y_test
 
 set.seed(3123)
 x_test <- rnorm(10)
 y_test <- 3 * x_test + rnorm(10)
 
-# ols_no_intercept(y = y_test, x = x_test)
+# Write your code here
 
-# A correct implementation will give you the same
-# result as the lm function
-
+# Compare your result with the lm function in R
 lm(y_test ~ 0 + x_test)
 ```
 :::
@@ -111,8 +113,8 @@ dt %>% head(2)
 
 $$
 \begin{align*}
-\widehat{\text{Time}}_1 & = \hat{\beta}_0 \cdot \text{Invoices}_1 \\
-\widehat{\text{Time}}_2 & = \hat{\beta}_0 \cdot \text{Invoices}_2 \\
+\widehat{\text{Time}}_1 & = \hat{\beta}_1 \cdot \text{Invoices}_1 \\
+\widehat{\text{Time}}_2 & = \hat{\beta}_1 \cdot \text{Invoices}_2 \\
 \end{align*}
 $$
 
@@ -120,8 +122,8 @@ With the concrete values from the data this is:
 
 $$
 \begin{align*}
-\widehat{\text{Time}}_1 & = \hat{\beta}_0 \cdot 149 \\
-\widehat{\text{Time}}_2 & = \hat{\beta}_0 \cdot 60 \\
+\widehat{\text{Time}}_1 & = \hat{\beta}_1 \cdot 149 \\
+\widehat{\text{Time}}_2 & = \hat{\beta}_1 \cdot 60 \\
 \end{align*}
 $$
 
@@ -133,7 +135,7 @@ $$
 \widehat{\text{Time}}_2
 \end{pmatrix}
 = 
-\hat{\beta}_0
+\hat{\beta}_1
 \begin{pmatrix}
 \text{Invoices}_1 \\
 \text{Invoices}_2
@@ -148,7 +150,7 @@ $$
 \hat{y}_2
 \end{pmatrix}}_{\hat{y}}
 = 
-\hat{\beta}_0
+\hat{\beta}_1
 \underbrace{\begin{pmatrix}
 x_1 \\
 x_2
@@ -224,17 +226,17 @@ $$
 or in a more generic form
 
 $$
-\hat{y} = \hat{\beta}_1 x_{1} + \hat{\beta}_2 x_{2}
+\hat{y} = \hat{\beta}_1 x + \hat{\beta}_2 s
 $$
 
-We can write this equation for every observation in the data set:
+We can write this equation for every observation in the data set (in our case the index $i$ runs from 1 to 30):
 
 $$
 \begin{align*}
-\hat{y}_1 & = \hat{\beta}_1 x_{1,1} + \hat{\beta}_2 x_{2,1} \\
-\hat{y}_2 & = \hat{\beta}_1 x_{1,2} + \hat{\beta}_2 x_{2,2} \\
+\hat{y}_1 & = \hat{\beta}_1 x_{1} + \hat{\beta}_2 s_{1} \\
+\hat{y}_2 & = \hat{\beta}_1 x_{2} + \hat{\beta}_2 s_{2} \\
 \vdots & \\
-\hat{y}_n & = \hat{\beta}_1 x_{1,n} + \hat{\beta}_2 x_{2,n} \\
+\hat{y}_n & = \hat{\beta}_1 x_{n} + \hat{\beta}_2 s_{n} \\
 \end{align*}
 $$
 
@@ -278,16 +280,16 @@ $$
 \hat{y} = X \hat{\beta}
 $$
 
-At this point it is helpful to visualize the predictions that this model makes. With only 3 observations, we can plot the two columns of the matrix $X$ and the vector $y$ in a 3D plot (@fig-two-vars-plane-3d). Because all preductions are just a linear combination of the two columns of $X$, these predictions will lie on a plane through the origin (0, 0, 0).
+At this point it is helpful to visualize the predictions that this model makes. With three observations, we can plot the two columns of the matrix $X$ and the vector $y$ in a 3D plot (@fig-two-vars-plane-3d). Because all predictions are just a linear combination of the two columns of $X$, these lie on a plane through the origin (0, 0, 0).
 
-Look at the following artificial examples:
+Let's create an artificial example:
 
 $$
 \underbrace{\begin{pmatrix} -3 \\ 10 \\ 12 \end{pmatrix} }_{y}
-= \hat{\beta}_1 \underbrace{\begin{pmatrix} -10 \\ -10 \\ 20 \end{pmatrix}}_{x_1} + \hat{\beta}_2 \underbrace{\begin{pmatrix} -4 \\ 2 \\ 2 \end{pmatrix}}_{x_2}
+= \hat{\beta}_1 \underbrace{\begin{pmatrix} -10 \\ -10 \\ 20 \end{pmatrix}}_{x} + \hat{\beta}_2 \underbrace{\begin{pmatrix} -4 \\ 2 \\ 2 \end{pmatrix}}_{s}
 $$
 
-The residual vector $r = y - X \hat{\beta}$ is:
+The residuals (one for every observations) $r = y - X \hat{\beta}$ are:
 
 $$
 r = \begin{pmatrix} -3 \\ 10 \\ 12 \end{pmatrix} - \begin{pmatrix} -10 \\ -10 \\ 20 \end{pmatrix} \hat{\beta}_1 - \begin{pmatrix} -4 \\ 2 \\ 2 \end{pmatrix} \hat{\beta}_2 = \begin{pmatrix} -3 + 10 \hat{\beta}_1 + 4 \hat{\beta}_2 \\ 10 + 10 \hat{\beta}_1 - 2 \hat{\beta}_2 \\ 12 - 20 \hat{\beta}_1 - 2 \hat{\beta}_2 \end{pmatrix}
@@ -318,15 +320,18 @@ $$
 \end{align*}
 $$
 
-After that, simplify the equations and solve them for $\hat{\beta}_1$ and $\hat{\beta}_2$.
+After that, simplify the equations and solve them for $\hat{\beta}_1$ and $\hat{\beta}_2$ (this is left as an exercise). The solution is:
+
+```{r}
+x <- c(-10, -10, 20)
+s <- c(-4, 2, 2)
+y <- c(-3, 10, 12)
+
+fit <- lm(y ~ 0 + x + s)
+fit$coefficients["x"] * x + fit$coefficients["s"] * s
+```
 
 
-
-
-
-
-::: grid
-::: g-col-12
 ```{r}
 #| echo: false
 #| label: fig-two-vars-plane-3d
@@ -372,25 +377,151 @@ plot_ly(x = ~x, y = ~y, z = ~z1, type = "mesh3d", data = xyz1, opacity = 0.2) %>
 # Draw an arrow from the plane to the target vector
 
 ```
-:::
-:::
 
-```{r}
-x1 <- c(-10, -10, 20)
-x2 <- c(-4, 2, 2)
-y <- c(-3, 10, 12)
+You can write the two equations in matrix form as
 
-fit <- lm(y ~ 0 + x1 + x2)
-fit$coefficients["x1"] * x1 + fit$coefficients["x2"] * x2
-```
+$$
+X^T (y - X \hat{\beta}) = 0
+$$
 
-```{r}
-lm(z1 ~ x + y) # Fit a plane to the data
-```
+which is just a compact way of writing the two equations that ensure that the residuals are orthogonal to the plane spanned by the predictors.
+We can rearrange the equation
+
+$$
+X^T X \hat{\beta} = X^T y
+$$
+
+Now we can solve for $\hat{\beta}$ by pre-multiplying both sides by $(X^T X)^{-1}$
+
+$$
+(X^T X)^{-1} X^T X \hat{\beta} = (X^T X)^{-1} X^T y
+$$
+
+This first term simplifies to the identity matrix $I$, beacuse $X^T X$ is a square matrix and its inverse is defined as the matrix that when multiplied by $X^T X$ gives the identity matrix.
+
+$$
+I \hat{\beta} = (X^T X)^{-1} X^T y
+$$
+
+Let us see how this looks like for a concrete example with three observations:
+
+$$
+X = \begin{pmatrix}
+x_1 & s_1 \\
+x_2 & s_2 \\
+x_3 & s_3
+\end{pmatrix}
+$$
+
+$$
+X^T X = \begin{pmatrix}
+x_1 & x_2 & x_3 \\
+s_1 & s_2 & s_3
+\end{pmatrix}
+\begin{pmatrix}
+x_1 & s_1 \\
+x_2 & s_2 \\
+x_3 & s_3
+\end{pmatrix}
+$$
+
+Now we carry out the matrix multiplication:
+
+$$
+X^T X = \begin{pmatrix}
+x_1^2 + x_2^2 + x_3^2 & x_1 s_1 + x_2 s_2 + x_3 s_3 \\
+x_1 s_1 + x_2 s_2 + x_3 s_3 & s_1^2 + s_2^2 + s_3^2
+\end{pmatrix}
+$$
+
+Note that on the diagonals we have the sum of the squares of the predictors and on the off-diagonals we have the sum of the products of the predictors. In order to avoid the long sums, we can instead replace them with the shorthand notation 
+of the averages:
+
+$$
+\overline{x} = \frac{1}{n} \sum_{i=1}^n x_i
+$$
+
+$$
+\overline{s} = \frac{1}{n} \sum_{i=1}^n s_i
+$$
+
+$$
+\overline{x s} = \frac{1}{n} \sum_{i=1}^n x_i s_i
+$$
+
+The matrix $X^T X$ becomes
+
+$$
+X^T X = 3 \begin{pmatrix}
+\overline{x^2} & \overline{x s} \\
+\overline{x s} & \overline{s^2}
+\end{pmatrix}
+$$
+
+Now, find the inverse of $X^T X$:
+
+$$
+(X^T X)^{-1} = \frac{1}{3 \overline{x^2} \overline{s^2} - \overline{x s}^2} \begin{pmatrix}
+\overline{s^2} & -\overline{x s} \\
+-\overline{x s} & \overline{x^2}
+\end{pmatrix}
+$$
+
+The vector $X^T y$ is
+
+$$
+X^T y = \begin{pmatrix}
+x_1 & x_2 & x_3 \\
+s_1 & s_2 & s_3
+\end{pmatrix}
+\begin{pmatrix}
+y_1 \\
+y_2 \\
+y_3
+\end{pmatrix}
+$$
+
+$$
+X^T y = \begin{pmatrix}
+x_1 y_1 + x_2 y_2 + x_3 y_3 \\
+s_1 y_1 + s_2 y_2 + s_3 y_3
+\end{pmatrix}
+$$
+
+Note that this is the sum of the products of the predictors and the response variable. We can replace this with the averages:
+
+$$
+\overline{x y} = \frac{1}{n} \sum_{i=1}^n x_i y_i
+$$
+
+$$
+\overline{s y} = \frac{1}{n} \sum_{i=1}^n s_i y_i
+$$
+
+The vector $X^T y$ becomes
+
+$$
+X^T y = 3 \begin{pmatrix}
+\overline{x y} \\
+\overline{s y}
+\end{pmatrix}
+$$
+
+Now we can write the solution for $\hat{\beta}$:
+
+$$
+\hat{\beta} = \frac{1}{3 \overline{x^2} \overline{s^2} - \overline{x s}^2} \begin{pmatrix}
+\overline{s^2} & -\overline{x s} \\
+-\overline{x s} & \overline{x^2}
+\end{pmatrix}
+\begin{pmatrix}
+\overline{x y} \\
+\overline{s y}
+\end{pmatrix}
+$$
 
 
-
-## The one variable case with an intercept
+## The Case of One Variable and an Intercept
 
 Now let us consider the case where we have two variables, $\text{Invoices}_i$ and $\text{Time}_i$. We want to find the values of $\hat{\beta}_0$ and $\hat{\beta}_1$ that minimize the RSS.
 
