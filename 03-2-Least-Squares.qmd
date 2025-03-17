@@ -158,7 +158,6 @@ x_2
 }_{x}
 $$
 
-
 ```{r}
 #| label: fig-vector-projection
 #| fig-cap: "The projection of the response variable (y) onto the vector x"
@@ -331,7 +330,6 @@ fit <- lm(y ~ 0 + x + s)
 fit$coefficients["x"] * x + fit$coefficients["s"] * s
 ```
 
-
 ```{r}
 #| echo: false
 #| label: fig-two-vars-plane-3d
@@ -384,8 +382,7 @@ $$
 X^T (y - X \hat{\beta}) = 0
 $$
 
-which is just a compact way of writing the two equations that ensure that the residuals are orthogonal to the plane spanned by the predictors.
-We can rearrange the equation
+which is just a compact way of writing the two equations that ensure that the residuals are orthogonal to the plane spanned by the predictors. We can rearrange the equation
 
 $$
 X^T X \hat{\beta} = X^T y
@@ -434,8 +431,7 @@ x_1 s_1 + x_2 s_2 + x_3 s_3 & s_1^2 + s_2^2 + s_3^2
 \end{pmatrix}
 $$
 
-Note that on the diagonals we have the sum of the squares of the predictors and on the off-diagonals we have the sum of the products of the predictors. In order to avoid the long sums, we can instead replace them with the shorthand notation 
-of the averages:
+Note that on the diagonals we have the sum of the squares of the predictors and on the off-diagonals we have the sum of the products of the predictors. In order to avoid the long sums, we can instead replace them with the shorthand notation of the averages:
 
 $$
 \overline{x} = \frac{1}{n} \sum_{i=1}^n x_i
@@ -519,7 +515,6 @@ $$
 \overline{s y}
 \end{pmatrix}
 $$
-
 
 ## The Case of One Variable and an Intercept
 
@@ -905,7 +900,6 @@ X^T y - X^T X \hat{\beta} = 0 \\
 X^T X \hat{\beta} = X^T y \\
 \end{align*}
 $$
-
 
 In the one-variable case without an intercept term, we could divide the equation by $x^T x$ to get the formula for $\hat{\beta}_1$. This worked because the scalar product of a vector is a scalar. However, here we need to deal with a whole matrix ($X^TX$). We can solve the equation for $\hat{\beta}$ by pre-multiplying both sides by the inverse of $X^T X$.
 

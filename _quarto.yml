@@ -14,9 +14,9 @@ book:
     - 02-Descriptive-Statistics.qmd
     - 03-1-Least-Squares.qmd
     - 03-2-Least-Squares.qmd
-    # - 04a-Discrete-Distributions.qmd
-    # - 04b-Continuous-Distributions.qmd
-    # - 05-One-Way-ANOVA.qmd
+    - 04-1-Discrete-Distributions.qmd
+    - 04-2-Continuous-Distributions.qmd
+    - 05-One-Way-ANOVA.qmd
     # - 06-Simulation.qmd
     # - 07-Multiple-Regression.qmd
     # - 08-Interactions.qmd
