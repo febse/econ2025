@@ -83,8 +83,6 @@ $$
 ::: {#exr-no-intercept-equation-r}
 ## No Intercept Implementation
 
-Write a function called `ols_no_intercept` that calculates the OLS estimate for $\hat{\beta}_1$ in the no-intercept equation
-
 $$
 \hat{y} = \hat{\beta}_1 x
 $$
