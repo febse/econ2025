@@ -69,46 +69,38 @@ $$
 \sum_{x = 0}^{3}p_X(x) = 0.250 + 0.095 + 0.272 + 0.383 = 1
 $$
 
-::: {#exr-prob-y}
-## Probability Mass Function
-
-Use the `sum` function to show that the probability mass function of $Y$ sums to one.
-
-```{r}
-
-```
-:::
-
 ::: {#exm-sampling-x}
-## Sampling from a univariate distribution
+## Sampling from a uni-variate distribution
 
 ```{r}
 set.seed(12)
 
 smpl_x <- px %>%
-  slice_sample(n = 20, weight_by = p, replace = TRUE)
-
-head(smpl_x) %>%
-  knitr::kable(digits=3)
+  slice_sample(n = 20000, weight_by = p, replace = TRUE)
+  
+smpl_x_summary <- smpl_x %>%
+  group_by(x) %>%
+  summarize(
+    n = n(),
+    ObservedShare = n / nrow(smpl_x),
+    Probability = first(p)
+  )
+smpl_x_summary
 ```
 
 It is useful to visualize the observed frequency of each outcome.
 
-```{r}
-# Absolute frequencies (counts)
-table(smpl_x$x)
-
-# Relative frequencies (shares)
-table(smpl_x$x) / nrow(smpl_x)
-```
 
 ```{r}
-smpl_x %>%
-  ggplot(aes(x = x)) + 
-    geom_bar() + 
+smpl_x_summary %>%
+  select(x, ObservedShare, Probability) %>%
+  pivot_longer(cols = c(ObservedShare, Probability), names_to="type", values_to="value") %>%
+  ggplot(aes(x = x, y = value, fill = type)) +
+    geom_col(position = "dodge") +
     labs(
       x = "Outcome",
-      y = "Frequency"
+      y = "Share",
+      fill = "Type"
     )
 ```
 :::
@@ -161,6 +153,7 @@ px %>%
 ## Expected Value
 
 Compute the expected value of $Y$.
+
 :::
 
 ::: solution
@@ -211,7 +204,7 @@ The variance of a random variable (distribution) measures how different the poss
 
 $$
 \begin{align}
-Var(X) & = \sum_{x = 0}^{3} (x - \mu_x)^2 \times p_X(x) \\
+\text{Var}(X) & = \sum_{x = 0}^{3} (x - \mu_x)^2 \times p_X(x) \\
        & = (0 - 1.788)^2 \times 0.250 + (1 - 1.788)^2 \times 0.095 + (2 - 1.788)^2\times 0.272 + (3 - 1.788)^2 \times 0.383 \\
        & = (-1.788)^2 \times 0.250 + (-0.788)^2 \times 0.095 + (0.212)^2\times 0.272 + (1.212)^2 \times 0.383 \\
        & = 3.196 \times 0.250 + 0.620^2 \times 0.095 + 0.044 \times 0.272 + 1.468 \times 0.383 \\
@@ -219,19 +212,24 @@ Var(X) & = \sum_{x = 0}^{3} (x - \mu_x)^2 \times p_X(x) \\
 \end{align}
 $$ {#eq-variance}
 
+::: {#exr-variance}
+## Variance
+
+Compute the Variance of $X$.
+:::
+
+::: solution
 ```{r}
-(px$x - mu_x)
-(px$x - mu_x)^2
-px$p * (px$x - mu_x)^2
-sum(px$p * (px$x - mu_x)^2)
+# Type your code here
+
 ```
+:::
 
 You can see from @eq-variance that it is the expected value of the squared deviations from the expected value.
 
 $$
 Var(X) = E(X - E(X))^2
 $$
-
 ::: {#def-variance}
 ## Variance
 
@@ -242,128 +240,55 @@ Var(X) = E[(X - E(X))^2] = E(X^2) - E(X)^2
 $$
 :::
 
-::: {#exr-variance}
-## Variance
+:::{#exr-variance-decomp}
+## Variance 
 
-Compute the Variance of $Y$.
+Compute the variance of $X$ using the decomposition formula.
+
 :::
-
-::: solution
+:::{.solution}
 ```{r}
 # Type your code here
 
 ```
 :::
 
-::: {#thm-exp-value-props}
-## Properties of the Expected Value
+## The Empirical Variance
 
-Let $X$ be a random variable with expected value $E(X)$, let $Y$ be a random variable with expected value $E(Y)$, and let $a$ be a fixed constant ($a \in \mathbb{R}$). The following properties are true:
-
-$$
-\begin{align}
-E(a) & = a \\
-E(aX) & = aE(X) \\
-E(X + Y) & = E(X) + E(Y)
-\end{align}
-$$
-
-Furthermore, if $X$ and $Y$ are *uncorrelated*, then the expected value of the product of the two random variables equals the product of their expected values:
+The (uncorrected) empirical variance is a measure of the spread of the observed values, it is computed as:
 
 $$
-E(XY) = E(X)E(Y)
+\frac{1}{n} \sum_{i=1}^{n} (x_i - \bar{x})^2
 $$
-:::
+is exactly the same as the variance of a distribution, but instead of the probabilities we have the observed proportions.
 
-::: {.callout-note collapse="true"}
-## Proof of the Properties of the Expectation
+For example:
 
-1.  $E(a) = a$
+```{r}
+x <- c(0, 0, 1, 1, 1, 2, 3, 3, 3)
+(x - mean(x))^2
+sum((x - mean(x))^2) / length(x)
+2.4197531 * 2 / 9 + 0.3086420 * 3 / 9 + 0.1975309 * 1 / 9 + 2.0864198 * 3 / 9
+```
 
-The expected value of a discrete variable $X$ with possible outcomes $x_1, x_2, \ldots, x_n$ and probabilities $p_1, p_2, \ldots, p_n$ is given by
+If you use the `var` function in R, it will return a slightly different value. 
 
-$$
-E(X) = \sum_{i = 1}^{n} x_i p_i
-$$
+```{r}
+var(x)
+```
 
-Multiplying both sides by $a$ gives
-
-$$
-aE(X) = a\sum_{i = 1}^{n} x_i p_i = \sum_{i = 1}^{n} ax_i p_i
-$$
-
-The right-hand side is the expected value of a random variable that takes the values $ax_1, ax_2, \ldots, ax_n$ with probabilities $p_1, p_2, \ldots, p_n$. Therefore, $E(aX) = aE(X)$.
-
-2.  $E(X + Y) = E(X) + E(Y)$
-
-This proof involves the joint distribution of $X$ and $Y$ which we will introduce later. Let $p_{XY}(x, y)$ be the joint probability mass function of $X$ and $Y$. The expected value of the sum of two random variables is given by
+This is because the `var` function in R uses the corrected formula for the variance:
 
 $$
-E(X + Y) = \sum_{x}\sum_{y} (x + y)p_{XY}(x, y)
+S^2_{x} = \frac{1}{n - 1} \sum_{i=1}^{n} (x_i - \bar{x})^2
 $$
 
-Expanding the sum gives
+```{r}
+# Compute both the corrected and the uncorrected variance 
+# from the samples of x and compare it with the variance of the distribution
 
-$$
-\begin{align*}
-\sum_{x}\sum_{y} (x + y)p_{XY}(x, y) & = \sum_{x}\sum_{y} xp_{XY}(x, y) + \sum_{x}\sum_{y} yp_{XY}(x, y)
-\end{align*}
-$$
 
-On the left hand side of the above equation we have two sums. In the first one, we can write $x$ in front of the second sum, because it does not depend on $y$. We can do the same for the second sum where $y$ does not depend on $x$.
-
-$$
-\begin{align*}
-\sum_{x}\sum_{y} (x + y)p_{XY}(x, y) & = \sum_{x}x\sum_{y} p_{XY}(x, y) + \sum_{y}y\sum_{x} p_{XY}(x, y)
-\end{align*}
-$$
-
-Now we need to see that summing the joint probability mass function over all possible values of $y$ gives the marginal distribution of $X$ and summing over all possible values of $x$ gives the marginal distribution of $Y$ (see @sec-marginal-distr).
-
-The first sum is the expected value of $X$ and the second sum is the expected value of $Y$. Therefore, $E(X + Y) = E(X) + E(Y)$.
-:::
-
-::: {#thm-variance-short}
-## Properties of the Variance
-
-Let $X$ be a random variable with expected value $E(X)$, let $Y$ be a random variable with expected value $E(Y)$, and let $a$ be a fixed constant ($a \in \mathbb{R}$). The following properties are true:
-
-$$
-Var(X) = E(X^2) - E(X)^2
-$$
-
-$$
-\begin{align}
-Var(a) & = 0 \\
-Var(aX) & = a^2 Var(X)
-\end{align}
-$$
-
-Furthermore, if $X$ and $Y$ are *uncorrelated*, then the variance of their sum equals the sum of their variances:
-
-$$
-Var(X + Y) = Var(X) + Var(Y)
-$$
-:::
-
-::: {#exr-sum}
-## Expected value and variance
-
-Use the distributions of $X$ and $Y$ from @tbl-distr-x and @tbl-distr-y to compute the expected value and the variance of
-
-$$
-2X + 3Y + 1.
-$$
-
-Assume that $X$ and $Y$ are independent.
-:::
-
-::: solution
-$$
-E(2X + 3Y + 1) = \\
-Var(2X + 3Y + 1) = 
-$$
-:::
+```
 
 ## Joint Distribution
 
@@ -678,4 +603,116 @@ Compute the covariance of $X$ and $Y$ under the joint distributions given in @tb
 # Type your code here
 
 ```
+:::
+
+
+::: {.callout-note collapse="true"}
+## Proof of the Properties of the Expectation
+
+1.  $E(a) = a$
+
+The expected value of a discrete variable $X$ with possible outcomes $x_1, x_2, \ldots, x_n$ and probabilities $p_1, p_2, \ldots, p_n$ is given by
+
+$$
+E(X) = \sum_{i = 1}^{n} x_i p_i
+$$
+
+Multiplying both sides by $a$ gives
+
+$$
+aE(X) = a\sum_{i = 1}^{n} x_i p_i = \sum_{i = 1}^{n} ax_i p_i
+$$
+
+The right-hand side is the expected value of a random variable that takes the values $ax_1, ax_2, \ldots, ax_n$ with probabilities $p_1, p_2, \ldots, p_n$. Therefore, $E(aX) = aE(X)$.
+
+2.  $E(X + Y) = E(X) + E(Y)$
+
+This proof involves the joint distribution of $X$ and $Y$ which we will introduce later. Let $p_{XY}(x, y)$ be the joint probability mass function of $X$ and $Y$. The expected value of the sum of two random variables is given by
+
+$$
+E(X + Y) = \sum_{x}\sum_{y} (x + y)p_{XY}(x, y)
+$$
+
+Expanding the sum gives
+
+$$
+\begin{align*}
+\sum_{x}\sum_{y} (x + y)p_{XY}(x, y) & = \sum_{x}\sum_{y} xp_{XY}(x, y) + \sum_{x}\sum_{y} yp_{XY}(x, y)
+\end{align*}
+$$
+
+On the left hand side of the above equation we have two sums. In the first one, we can write $x$ in front of the second sum, because it does not depend on $y$. We can do the same for the second sum where $y$ does not depend on $x$.
+
+$$
+\begin{align*}
+\sum_{x}\sum_{y} (x + y)p_{XY}(x, y) & = \sum_{x}x\sum_{y} p_{XY}(x, y) + \sum_{y}y\sum_{x} p_{XY}(x, y)
+\end{align*}
+$$
+
+Now we need to see that summing the joint probability mass function over all possible values of $y$ gives the marginal distribution of $X$ and summing over all possible values of $x$ gives the marginal distribution of $Y$ (see @sec-marginal-distr).
+
+The first sum is the expected value of $X$ and the second sum is the expected value of $Y$. Therefore, $E(X + Y) = E(X) + E(Y)$.
+:::
+
+::: {#thm-variance-short}
+## Properties of the Variance
+
+Let $X$ be a random variable with expected value $E(X)$, let $Y$ be a random variable with expected value $E(Y)$, and let $a$ be a fixed constant ($a \in \mathbb{R}$). The following properties are true:
+
+$$
+Var(X) = E(X^2) - E(X)^2
+$$
+
+$$
+\begin{align}
+Var(a) & = 0 \\
+Var(aX) & = a^2 Var(X)
+\end{align}
+$$
+
+Furthermore, if $X$ and $Y$ are *uncorrelated*, then the variance of their sum equals the sum of their variances:
+
+$$
+Var(X + Y) = Var(X) + Var(Y)
+$$
+:::
+
+::: {#exr-sum}
+## Expected value and variance
+
+Use the distributions of $X$ and $Y$ from @tbl-distr-x and @tbl-distr-y to compute the expected value and the variance of
+
+$$
+2X + 3Y + 1.
+$$
+
+Assume that $X$ and $Y$ are independent.
+:::
+
+::: solution
+$$
+E(2X + 3Y + 1) = \\
+Var(2X + 3Y + 1) = 
+$$
+:::
+
+
+::: {#thm-exp-value-props}
+## Properties of the Expected Value
+
+Let $X$ be a random variable with expected value $E(X)$, let $Y$ be a random variable with expected value $E(Y)$, and let $a$ be a fixed constant ($a \in \mathbb{R}$). The following properties are true:
+
+$$
+\begin{align}
+E(a) & = a \\
+E(aX) & = aE(X) \\
+E(X + Y) & = E(X) + E(Y)
+\end{align}
+$$
+
+Furthermore, if $X$ and $Y$ are *uncorrelated*, then the expected value of the product of the two random variables equals the product of their expected values:
+
+$$
+E(XY) = E(X)E(Y)
+$$
 :::
