@@ -17,7 +17,7 @@ book:
     - 04-1-Discrete-Distributions.qmd
     - 04-2-Continuous-Distributions.qmd
     - 05-One-Way-ANOVA.qmd
-    # - 06-Simulation.qmd
+    - 06-Simulation.qmd
     # - 07-Multiple-Regression.qmd
     # - 08-Interactions.qmd
     # - lecture_problems.qmd

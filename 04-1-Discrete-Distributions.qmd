@@ -90,7 +90,6 @@ smpl_x_summary
 
 It is useful to visualize the observed frequency of each outcome.
 
-
 ```{r}
 smpl_x_summary %>%
   select(x, ObservedShare, Probability) %>%
@@ -153,7 +152,6 @@ px %>%
 ## Expected Value
 
 Compute the expected value of $Y$.
-
 :::
 
 ::: solution
@@ -229,24 +227,21 @@ You can see from @eq-variance that it is the expected value of the squared devia
 
 $$
 Var(X) = E(X - E(X))^2
-$$
-::: {#def-variance}
-## Variance
+$$ ::: {#def-variance} \## Variance
 
 The variance of a random variable (distribution) is a summary of the distribution and describes its spread: how different are the values that this distribution will generate.
 
 $$
 Var(X) = E[(X - E(X))^2] = E(X^2) - E(X)^2
-$$
-:::
+$$ :::
 
-:::{#exr-variance-decomp}
-## Variance 
+::: {#exr-variance-decomp}
+## Variance
 
 Compute the variance of $X$ using the decomposition formula.
-
 :::
-:::{.solution}
+
+::: solution
 ```{r}
 # Type your code here
 
@@ -259,8 +254,7 @@ The (uncorrected) empirical variance is a measure of the spread of the observed 
 
 $$
 \frac{1}{n} \sum_{i=1}^{n} (x_i - \bar{x})^2
-$$
-is exactly the same as the variance of a distribution, but instead of the probabilities we have the observed proportions.
+$$ is exactly the same as the variance of a distribution, but instead of the probabilities we have the observed proportions.
 
 For example:
 
@@ -271,7 +265,7 @@ sum((x - mean(x))^2) / length(x)
 2.4197531 * 2 / 9 + 0.3086420 * 3 / 9 + 0.1975309 * 1 / 9 + 2.0864198 * 3 / 9
 ```
 
-If you use the `var` function in R, it will return a slightly different value. 
+If you use the `var` function in R, it will return a slightly different value.
 
 ```{r}
 var(x)
@@ -605,7 +599,6 @@ Compute the covariance of $X$ and $Y$ under the joint distributions given in @tb
 ```
 :::
 
-
 ::: {.callout-note collapse="true"}
 ## Proof of the Properties of the Expectation
 
@@ -695,7 +688,6 @@ E(2X + 3Y + 1) = \\
 Var(2X + 3Y + 1) = 
 $$
 :::
-
 
 ::: {#thm-exp-value-props}
 ## Properties of the Expected Value

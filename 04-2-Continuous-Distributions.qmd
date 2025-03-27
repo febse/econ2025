@@ -51,7 +51,6 @@ x_unif
 ```{r}
 ## Count the number of values less than zero
 
-sum(x_unif < 0)
 
 ## Count the number of values greater than 0.5
 
@@ -64,7 +63,9 @@ punif(0, min = -1, max = 1)
 
 ```{r}
 # Compute the probability of the event X > 0.5 using the punif function
-1 - punif(0.5, min = -1, max = 1)
+
+# Compute the probability of the event 0.2 < X < 0.5
+
 ```
 
 Compare the result above with the probability of the event $X < 0$.
@@ -249,7 +250,7 @@ Compute the probability of the event $X > 1.96$ for the standard normal distribu
 
 ```
 
-Compute the probability of the event $-1.3, 1$ for the standard normal distribution.
+Compute the probability of the event $(-1.3, 1)$ for the standard normal distribution.
 
 ```{r}
 
@@ -266,7 +267,7 @@ x_norm <- rnorm(10, mean = 0, sd = 1)
 ```{r}
 # Count the number of values less than zero
 
-sum(x_norm < 0)
+
 ```
 
 Compare the result with the theoretical probability of the event $X < 0$.
