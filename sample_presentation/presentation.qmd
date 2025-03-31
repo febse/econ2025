@@ -1,0 +1,132 @@
+---
+title: "House Value Prediction Using the Ames Assessor’s Office Data"
+subtitle: "A Case Study Using Linear Regression Analysis in R"
+author: "Boyko Amarov"
+format: revealjs
+---
+
+```{r setup, echo=FALSE, warning=FALSE}
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
+
+if (!requireNamespace("plotly", quietly = TRUE)) {
+  install.packages("plotly")
+}
+
+if (!requireNamespace("broom", quietly = TRUE)) {
+  install.packages("broom")
+}
+
+# Load the required libraries
+
+
+library("tidyverse")
+library("plotly")
+library("broom")
+
+dt <- read_csv("https://github.com/febse/data/raw/refs/heads/main/econ/AmesHousing.csv")
+
+# Rename some of the variables, because it is easier to work with variable (column) names
+# that do not contain spaces or special characters
+
+
+dt <- dt %>% 
+    rename(
+        LotArea = `Lot Area`,
+        YearBuilt = `Year Built`,
+        LivingArea = `Gr Liv Area`
+    )
+```
+
+## Introduction
+
+-   The Ames Assessor’s Office dataset provides detailed information about residential properties in Ames, Iowa between 2006 and 2010. <https://jse.amstat.org/v19n3/decock/DataDocumentation.txt>
+-   The dataset contains 2930 observations and 82 variables.
+-   In this presentation we explore a linear regression model to predict house values based on various features of the properties.
+
+## Research Question
+
+-   What is the relationship between sales prices values and various features of the properties?
+-   Living area, lot area, year built, and other features of the properties.
+
+## The Data
+
+```{r}
+#| font-size: 9
+
+# Load the required library
+library(plotly)
+
+# Select the first four variables for the scatterplot matrix
+scatter_data <- dt %>%
+  select(LotArea, YearBuilt, LivingArea, SalePrice)
+
+# Create the scatterplot matrix
+fig <- plot_ly(
+  data = scatter_data,
+  type = 'splom',
+  dimensions = list(
+    list(label = "Lot Area", values = ~LotArea),
+    list(label = "Year Built", values = ~YearBuilt),
+    list(label = "Living Area", values = ~LivingArea),
+    list(label = "Sale Price", values = ~SalePrice)
+  )
+) %>%
+style(showupperhalf = F)
+
+fig
+```
+
+## The Model
+
+- We predict the house value using the linear regression model:
+
+$$
+\begin{align*}
+\text{Price}_i & = \beta_0 + \beta_1 \text{LivingArea}_i + \beta_2 \text{LotArea}_i + \beta_3\text{YearBuilt}_i + e_i
+\end{align*}
+$$
+
+where $e_i$ are zero-mean, uncorrelated random terms with constant variance $\sigma^2$.
+
+- The model is estimated using the method of least squares.
+- The independent variables are centered by subtracting their mean to improve the interpretability of the coefficients.
+- The sales price is divided by 1000 to avoid large coefficients.
+
+## Results
+
+```{r}
+
+dt <- dt %>%
+  mutate(
+    SalesPriceC = SalePrice / 1000,
+    LotAreaC = LotArea - mean(LotArea),
+    YearBuiltC = YearBuilt - mean(YearBuilt),
+    LivingAreaC = LivingArea - mean(LivingArea)
+  )
+
+fit <- lm(SalesPriceC ~ LivingAreaC + LotAreaC + YearBuiltC, data = dt)
+
+summary(fit) %>% 
+  tidy() %>% 
+  knitr::kable(
+    caption = "Linear Regression Model Results",
+    col.names = c("Variable", "Estimate", "Std. Error", "t value", "p value"),
+    digits = 3
+  )
+```
+
+R squared: 0.66
+
+## Interpretation
+
+- The estimated sales price for a house with an average year built, average lot area, and average living area is 180,796 USD.
+- Newer houses tended to be more expensive. A difference of 10 years is associated with about 10,990 USD price difference (for equal lot area and living area).
+- As expected: larger houses tend to be more expensive. A difference of 100 square feet is associated with about 9,200 USD higher price (for equal lot area and year built).
+- Houses with larger lot areas tend to be more expensive. 
+- All coefficients are statistically significant at the 0.05 level.
+
+## Diagnostic Plots
+
+Thank you for your attention!
