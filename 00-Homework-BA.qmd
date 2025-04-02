@@ -30,6 +30,8 @@ clone it using R-Studio (you need to have Git installed on your computer, look i
 If you encounter difficulties with the images and tables in the presentation, you can always 
 just run the code in R-Studio and copy the output into PowerPoint.
 
+The sample code saves the two figures as `.png` files in the same directory as the `presentation.qmd` file, so
+you can import them into PowerPoint.
 :::
 
 ## Your Own Presentation
