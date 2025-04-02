@@ -1,5 +1,46 @@
 # Presentation (Business Administration) {.unnumbered}
 
+As we discussed in class, I have created a GitHub Repository with a sample
+presentation in Quarto format. To download the repository in one go, you can
+clone it using R-Studio (you need to have Git installed on your computer, look in @sec-software-setup for instructions)
+
+1. Open R-Studio
+2. Go to File -\> New Project
+3. Select Version Control
+4. Select Git
+5. Paste the URL of the repository in the Repository URL field
+
+:::{.callout-note}
+## Repository URL
+
+<https://github.com/febse/econ2025-presentation.git>
+:::
+
+6. Select a local directory where you want to save the repository
+7. Click on Create Project
+8. Wait for R-Studio to clone the repository and open the project
+9. Open the file `presentation.qmd` in the editor
+10. Click on the Render button in the upper right corner of the editor
+11. The presentation will be generated in powerpoint format and saved in the same directory as the `presentation.qmd` file
+12. Open the presentation in PowerPoint and edit it as you like
+
+:::{.callout-important}
+## Image and Tables
+
+If you encounter difficulties with the images and tables in the presentation, you can always 
+just run the code in R-Studio and copy the output into PowerPoint.
+
+:::
+
+## Your Own Presentation
+
+1. Choose the data for you own presentation
+2. Save the CSV or Excel file in the same directory as the `presentation.qmd` file
+3. Change the file name in the calls to `read_csv` or `read_excel` in the `presentation.qmd` file
+4. Change the code in the `presentation.qmd` file to generate the plots and tables you want to include in your presentation
+
+<!-- # Presentation (Business Administration) {.unnumbered}
+
 Please register your team **by March 20-th, 2025** by following the link below:
 
 <https://classroom.github.com/a/AC5DGfAH>
@@ -18,4 +59,4 @@ Please register your team **by March 20-th, 2025** by following the link below:
 
 ![Open the repository](figures/hw/05-Open-Repo.png)
 
-1.  You can upload files into the repository by clicking on "Add files" -\> "Upload". If you have any questions, please email me at [amarov\@feb.uni-sofia.bg](mailto:amarov@feb.uni-sofia.bg).
+1.  You can upload files into the repository by clicking on "Add files" -\> "Upload". If you have any questions, please email me at [amarov\@feb.uni-sofia.bg](mailto:amarov@feb.uni-sofia.bg). -->

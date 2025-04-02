@@ -1,4 +1,4 @@
-# General Information {.unnumbered}
+# General Information {#sec-general-info .unnumbered}
 
 ::: callout-note
 ## Website URL
@@ -24,7 +24,7 @@ All course materials for the exercise classes will be available in the GitHub re
 
 [{{< var github >}}]({{< var github >}})
 
-## Software Setup
+## Software Setup {#sec-software-setup}
 
 The exercise classes require a minimal software setup:
 
