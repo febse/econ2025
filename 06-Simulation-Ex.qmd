@@ -1,0 +1,728 @@
+# A Simulation Study (Exercise)  {#sec-simulation-anova-ex}
+
+```{r setup}
+## Warning: to compile the notes you need the "bookdown" and the "broom" packages. Install them by
+## running install.packages, see the commented lines below
+
+if (!require("tidyverse")) {
+  install.packages("tidyverse")
+}
+
+if (!require("broom")) {
+  install.packages("broom")
+}
+
+if (!require("patchwork")) {
+  install.packages("patchwork")
+}
+
+if (!require("latex2exp")) {
+  install.packages("latex2exp")
+}
+
+library(tidyverse)
+library(broom)
+library(patchwork)
+
+kids <- read_csv(
+  "https://raw.githubusercontent.com/feb-uni-sofia/econometrics2020-solutions/master/data/childiq.csv") %>%
+  select(kid_score, mom_hs)
+```
+
+## The population
+
+In order to study the statistical properties of the OLS estimators $\hat{\beta}_0$ and $\hat{\beta}_1$ we will generate a large number of samples from the following model:
+
+$$
+\begin{align*}
+& \text{Y}_i \sim N(\mu_i, \sigma^2 = 20^2), \quad i = 1,\ldots, N = 1e6 \\
+& \mu_i = 80 + 15 x_i, \quad x_i \in \{0, 1\}
+\end{align*}
+$$ {#eq-simulation-anova-model}
+
+```{r}
+set.seed(123)
+
+## Population parameters
+
+N <- 2e6 # Number of children in the population
+beta0 <- 80 # Average IQ of children with mom_hs = 0
+beta1 <- 15 # Difference in average IQ between children with mom_hs = 1 and mom_hs = 0
+sigma <- 20 # Standard deviation of the IQ scores
+prop_ones <- 0.8 # Proportion of children with mom_hs = 1
+
+pop <- tibble(
+  mom_hs = rbinom(N, 1, prop_ones),
+  mu = beta0 + beta1 * mom_hs,
+  kid_score = rnorm(N, mu, sigma)
+) %>%
+  mutate(
+      kid_id = 1:n()
+  )
+```
+
+```{r}
+pop_summary <- pop %>%
+  group_by(mom_hs) %>%
+  summarize(
+    n = n(),
+    mean = mean(kid_score),
+    sd = sd(kid_score),
+  )
+pop_summary
+```
+
+
+```{r}
+pop %>%
+    ggplot(aes(x = kid_score, color = factor(mom_hs))) +
+    geom_vline(
+      data = pop_summary,
+      lty = 2,
+      aes(xintercept = mean, color = factor(mom_hs))) +  
+    geom_density() + 
+    labs(
+      color = "Mother's status"
+    )
+```
+
+
+```{r}
+## Simulation parameters
+
+n <- 20 # Sample size
+R <- 1000 # Number of samples
+
+sim <- pop %>%
+  slice_sample(n = n * R, replace = TRUE) %>%
+  mutate(
+    # We will add a column to identify the sample number
+    sample_id = rep(1:R, each = n)
+  )
+
+sim_coeffs <- sim %>%
+  group_by(sample_id) %>%
+  ## The tidy function reformats the output of lm so that it can fit in a data frame
+  group_map(function(d, id) {
+     fit <- lm(kid_score ~ 1 + mom_hs, data = d)
+     out <- fit %>% tidy()
+     fit_summary <- fit %>% summary()
+     out["r.squared"] <- fit_summary$r.squared
+     out["sigma"] <- fit_summary$sigma
+     out["sample_id"] <- id
+     out
+  }) %>%
+  bind_rows()
+
+## Creates a separate table with the coefficients for mom_hs
+sim_slopes <- sim_coeffs %>%
+  filter(term == "mom_hs")
+```
+
+
+```{r}
+# Exercise: 
+# - Select samples 1 and 2 from the sim dataset
+# - Calculate the regression coefficients for the 
+# two samples
+# - Compare the results with the values for the first two samples in `sim_slopes`.
+
+sample1 <- sim %>% filter(sample_id == 1)
+lm(kid_score ~ mom_hs, data = sample1)
+
+```
+
+## Distribution of the OLS estimates
+
+```{r}
+#| label: fig-sim-distr-slopes
+#| fig-cap: "Sampling distribution of $\\hat{\\beta}_1$. Each dot represents the slope estimate in one sample."
+
+# The red line is drawn at the population value of $\beta_1$: 11.77. The  position of the dots on the y-axis does not convey any meaningful information and it only serves to  disentangle  the points so that they don't overplot.
+
+sim_slopes %>%
+  ggplot(aes(x = estimate)) +
+  geom_point(
+    aes(y = 0),
+    position = "jitter",
+    size = 1 / 2,
+    alpha = 0.5
+  ) +
+  geom_boxplot(alpha = 0.5) +
+  ## Draws a density estimate
+  geom_density(color = "steelblue") +
+  ## Draws a vertical line a 11.77 (the value of beta_1 used in the simulation)
+  geom_vline(xintercept = 15, color = "firebrick") + 
+  ## Sets the labels of the x and y axis and the title of the plot
+  labs(
+    x = "Estimate",
+    title = "Distribution of the slope estimates in 1000 samples)",
+    y = "Density"
+  )
+```
+
+## Key Points
+
+$$
+\hat{\beta}_1 = \bar{Y}_{1} - \bar{Y}_{0}
+$$
+
+1. What is the **expected** value of $\hat{\beta}_1?$
+
+$$
+E(\hat{\beta}_1) = E(\bar{Y}_{1} - \bar{Y}_{0}) = \mu_1 - \mu_0
+$$
+
+```{r}
+
+```
+
+2. What is the **variance** of $\hat{\beta}_1$
+
+```{r}
+
+```
+
+3. The variance of he error terms can be estimated by dividing the 
+residual sum of squares by the degrees of freedom of the model
+
+$$
+\hat{\sigma}^2 = \frac{1}{n - p} \sum_{i}^{n}(y_i - \hat{y}_i)^2
+$$
+
+What is its expected value?
+
+```{r}
+
+```
+
+4. The variance of $\hat{\beta}_1$ (in this special case) is:
+
+$$
+\begin{align*}
+Var(\hat{\beta}_1) & = Var(\bar{Y}_1) + Var(\bar{Y}_2) \\
+                   & = \frac{\sigma^2}{n_1} + \frac{\sigma^2}{n_0}
+\end{align*}
+$$
+
+To get the _estimated_ variance of $\hat{\beta}_1$, replace the unknown $\sigma^2$ with its estimate $\hat{\sigma}^2$:
+
+$$
+\begin{align*}
+\widehat{Var}(\hat{\beta}_1) & = \frac{\hat{\sigma}^2}{n_1} + \frac{\hat{\sigma}^2}{n_0}
+\end{align*}
+$$
+
+
+What is its expected value?
+
+```{r}
+
+```
+
+## Hypothesis testing
+
+### Testing a true null hypothesis {#sec-testing-true-h0}
+
+$$
+H_0: \beta_1 \geq 15\\
+H_1: \beta_1 < 15
+$$ {#eq-hypothesis-true-one-sided}
+
+$$
+\text{t-statistic} = \frac{\hat{\beta}_1 - \beta_1^{H_o}}{se(\hat{\beta}_1)}
+$$
+
+$$
+\text{t-statistic} = \frac{\hat{\beta}_1 - 15}{se(\hat{\beta}_1)}.
+$$
+
+
+
+```{r}
+# Compute the test statistic for each sample
+
+# sim_slopes <- sim_slopes %>%
+#   mutate(
+#     t_statistic = ...
+# )
+```
+
+```{r}
+#| label: fig-sim-t-statistic-h0-true
+#| fig-cap: "Distribution of the t-statistic when the null hypothesis is correct."
+
+# sim_slopes %>%
+#   ggplot(aes(x = t_statistic)) +
+#   geom_point(
+#     aes(y = 0),
+#     position = "jitter",
+#     size = 1 / 2,
+#     alpha = 0.5
+#   ) +
+#   geom_boxplot(alpha = 0.5) +
+#   labs(
+#     x = "Value of the t-statistic",
+#     title = "Distribution of t-statistic under a true null hypothesis beta_1 = 11.77 (2000 samples)",
+#     y = ""
+#   ) +
+#   geom_density(color = "steelblue") +
+#   geom_vline(xintercept = 0, color = "red") +
+#   geom_vline(xintercept = c(-2), color = "steelblue", lty = 2) +
+#   geom_vline(xintercept = c(-3), color = "firebrick", lty = 2) +
+#   xlim(c(-4, 8)) +
+#   scale_x_continuous(breaks = c(-3, -2, 0))
+```
+
+
+```{r}
+# sim_slopes <- sim_slopes %>%
+#   mutate(
+#     wrong_2 = ...,
+#     wrong_3 = ...
+#   )
+
+# ## Share of TRUE values (blue)
+
+## Share of TRUE values (red)
+```
+
+### Testing a wrong null hypothesis {#sec-testing-wrong-h0}
+
+$$
+H_0: \beta_1 \leq 0\\
+H_1: \beta_1 > 0
+$$ {#eq-null-wrong}
+
+$$
+\text{t-statistic} = \frac{\hat{\beta}_1 - 0}{SE(\hat{\beta}_1)}
+$$ {#eq-t-statistic-h0-wrong}
+
+```{r}
+# sim_slopes <- sim_slopes %>%
+#   mutate(
+#     t_statistic0 = ...
+#   )
+```
+
+```{r}
+#| label: fig-t-statistic-h0-false
+#| fig-cap: "Distribution of the t-statistic under the (wrong) null hypothesis $\beta_1 = 0$."
+
+# sim_slopes %>%
+#   ggplot(aes(x = t_statistic0)) +
+#   geom_point(
+#     aes(y = 0),
+#     position = "jitter",
+#     size = 1 / 2,
+#     alpha = 0.5
+#   ) +
+#   geom_boxplot(alpha = 0.5) +
+#   labs(
+#     x = "t-statistic",
+#     y = "Density"
+#   ) +
+#   geom_density(color = "steelblue") +
+#   geom_vline(xintercept = 0, color = "red") +
+#   geom_vline(xintercept = c(2), color = "steelblue", lty = 2) +
+#   geom_vline(xintercept = c(3), color = "firebrick", lty = 2) +
+#   xlim(c(-4, 8)) +
+#   scale_x_continuous(breaks = c(0, 2, 3))
+```
+
+```{r}
+# sim_slopes <- sim_slopes %>%
+#   mutate(
+#     ## A wrong decision here is to not-reject the null
+#     wrong_decision_blue_1 = ...,
+#     wrong_decision_red_1 = ...
+#   )
+
+## Number of TRUE values
+
+## Share of TRUE values
+
+```
+
+## The t-distribution
+
+```{r}
+#| label: fig-t-distribution-df
+#| fig-cap: "Densities of t-distributions with different degrees of freedom (df)."
+
+dt <- expand_grid(
+  ## Creates a sequence of 100 numbers between -3 and 3
+  x = seq(-4, 4, length.out = 200),
+  df = c(1, 5, 50, 500)
+) %>%
+  mutate(
+    ## Computes the standard normal density at each of the 100 points in x
+    t_dens = dt(x, df = df),
+    df = factor(df)
+  )
+
+ggplot() +
+  ## Draws the normal density line
+  geom_line(data = dt, aes(x = x, y = t_dens, colour = df)) + 
+  labs(
+    y = "Density"
+  )
+```
+
+$$
+H_0: \beta_1 \geq \beta_1^{H_0}\\
+H_1: \beta_1 < \beta_1^{H_0}
+$$ {#eq-alternative-one-sided-left}
+
+We want to choose the critical value that meets a predetermined probability of wrong rejection of a true null hypothesis.
+
+```{r, echo = FALSE}
+#| label: fig-critical-value-left
+#| fig-cap: "Critical value for a one-sided alternative (left)."
+
+dt <- data.frame(
+  ## Creates a sequence of 100 numbers between -3 and 3
+  x = seq(-4, 4, length.out = 2000)
+) %>%
+  mutate(
+    ## Computes the standard normal density at each of the 100 points in x
+    t_dens = dt(x, df = 434 - 2)
+  )
+
+ggplot() +
+  ## Draws the normal density line
+  geom_line(data = dt, aes(x = x, y = t_dens)) +
+  ## Draws the shaded area under the curve between
+  ## -1 and 1
+  geom_ribbon(
+    data = filter(dt, x < -1.64),
+    aes(x = x, y = t_dens, ymin = 0, ymax = t_dens),
+    ## Controls the transparency of the area
+    alpha = 0.5
+  ) +
+  labs(
+    x = "t-statistic",
+    y = "Density"
+  ) +
+  annotate(
+    "text",
+    x = -3.2,
+    y = dnorm(0) / 6,
+    label = latex2exp::TeX("$P(t < t_{\\alpha}(n - p)) = \\alpha$"),
+    parse = TRUE
+  ) + 
+  geom_vline(xintercept = c(-1.64), lty = 2, colour = "steelblue") +
+  # geom_density(data = slopes, aes(x = t_statistic), color = "steelblue4") +
+  scale_x_continuous(breaks = c(-1.64, 0), labels = c(latex2exp::TeX("$t_{\\alpha}(n - p)$"), "0"))
+```
+
+If we choose the error probability to be $\alpha$, then the critical value for the one-sided alternative in [-@eq-alternative-one-sided-left] is the $\alpha$ quantile of the t-distribution. We write $t_{\alpha}(n - p)$ to denote this quantile.
+
+In the simulation we had sample sizes $n = 434$ and two coefficients in the model ($\beta_0, \beta_1$), therefore $p = 2$. Let $\alpha = 0.05$. We can compute the quantile using the `qt` function.
+
+```{r}
+qt(0.05, df = 434 - 2)
+```
+
+$$
+H_0: \beta_1 \leq \beta_{H_0}\\
+H_1: \beta_1 > \beta_{H_0}
+$$
+
+```{r, echo = FALSE}
+#| label: fig-critical-value-right
+#| fig-cap: "Critical value for a one-sided alternative (right)."
+
+dt <- data.frame(
+  ## Creates a sequence of 100 numbers between -3 and 3
+  x = seq(-4, 4, length.out = 2000)
+) %>%
+  mutate(
+    ## Computes the standard normal density at each of the 100 points in x
+    t_dens = dt(x, df = 434 - 2)
+  )
+
+ggplot() +
+  ## Draws the normal density line
+  geom_line(data = dt, aes(x = x, y = t_dens)) +
+  ## Draws the shaded area under the curve between
+  ## -1 and 1
+  geom_ribbon(
+    data = filter(dt, x > 1.64),
+    aes(x = x, y = t_dens, ymin = 0, ymax = t_dens),
+    ## Controls the transparency of the area
+    alpha = 0.5
+  ) +
+  labs(
+    x = "t-statistic",
+    y = "Density"
+  ) +
+  annotate(
+    "text",
+    x = 3.2,
+    y = dnorm(0) / 6,
+    label = latex2exp::TeX("$P(t > t_{1 - \\alpha}(n - p)) = \\alpha$"),
+    parse = TRUE
+  ) + 
+  geom_vline(xintercept = c(1.64), lty = 2, colour = "steelblue") +
+  # geom_density(data = slopes, aes(x = t_statistic), color = "steelblue4") +
+  scale_x_continuous(breaks = c(0, 1.64), labels = c("0", latex2exp::TeX("$t_{1 - \\alpha}(n - p)$")))
+```
+
+```{r}
+qt(1 - 0.05, df = 434 - 2)
+```
+
+$$
+H_0: \beta_1 = \beta_1^{H_0} \\
+H_1: \beta_1 \neq \beta_1^{H_0}
+$$
+
+```{r, echo = FALSE}
+#| label: fig-critical-value-two-sided
+#| fig-cap: "Critical values for a two-sided alternative."
+
+dt <- data.frame(
+  ## Creates a sequence of 100 numbers between -3 and 3
+  x = seq(-4, 4, length.out = 2000)
+) %>%
+  mutate(
+    ## Computes the standard normal density at each of the 100 points in x
+    t_dens = dt(x, df = 434 - 2)
+  )
+
+ggplot() +
+  ## Draws the normal density line
+  geom_line(data = dt, aes(x = x, y = t_dens)) +
+  ## Draws the shaded area under the curve between
+  ## -1 and 1
+  geom_ribbon(
+    data = filter(dt, x > 1.64),
+    aes(x = x, y = t_dens, ymin = 0, ymax = t_dens),
+    ## Controls the transparency of the area
+    alpha = 0.5
+  ) +
+  geom_ribbon(
+    data = filter(dt, x < -1.64),
+    aes(x = x, y = t_dens, ymin = 0, ymax = t_dens),
+    ## Controls the transparency of the area
+    alpha = 0.5
+  ) +
+  labs(
+    x = "t-statistic",
+    y = "Density"
+  ) +
+  annotate(
+    "text",
+    x = -3.2,
+    y = dnorm(0) / 6,
+    label = latex2exp::TeX("$P(t < t_{\\alpha / 2}(n - p)) = \\alpha / 2$"),
+    parse = TRUE
+  ) + 
+  annotate(
+    "text",
+    x = 3.2,
+    y = dnorm(0) / 6,
+    label = latex2exp::TeX("$P(t > t_{1 - \\alpha / 2}(n - p)) = \\alpha / 2$"),
+    parse = TRUE
+  ) + 
+  geom_vline(xintercept = c(-1.64, 1.64), lty = 2, colour = "steelblue") +
+  scale_x_continuous(
+    breaks = c(-1.64, 0, 1.64), 
+    labels = c(
+      latex2exp::TeX("$t_{\\alpha / 2}(n - p)$"),
+      "0", 
+      latex2exp::TeX("$t_{1 - \\alpha / 2}(n - p)$")
+    )
+  )
+```
+
+```{r}
+#
+
+```
+
+### The p-value
+
+```{r}
+summary(lm(kid_score ~ 1 + mom_hs, data = kids))
+```
+
+$$
+H_0: \beta_1 \leq 0 \\
+H_0: \beta_1 > 0
+$$ The sample value of the t-statistic is
+
+$$
+\frac{11.77 - 0}{2.3} \approx 5.1
+$$
+
+For this alternative extreme (consistent with the alternative) values of the t-statistic are large positive values. Therefore the p-value of this test is
+
+$$
+P(t > \text{t-statistic}^{obs} | H_0)
+$$
+
+
+```{r}
+## Calculate the p-value for the one-sided alternative
+#
+
+```
+
+This probability is equal to about 2.5 out of 10 million. This means that samples with a t-statistic greater than the one observed (5.1) are extremely rare. Either we have been extremely lucky to select a very rare sample or the null hypothesis is wrong.
+
+Let us now consider the other one-sided alternative
+
+$$
+H_0: \beta_1 \geq 0 \\
+H_1: \beta_1 < 0
+$$
+
+For this alternative extreme values of the t-statistic are large (in absolute value) negative values. Therefore the p-value of the test is
+
+$$
+P(t < \text{t-statistic}^{obs} | H_0)
+$$ We can compute this probability using `pt`.
+
+```{r}
+
+```
+
+This p-value is close to one, implying that under the null hypothesis almost all samples would have a t-statistic less than 5.1.
+
+Finally, let us consider the two-sided alternative
+
+$$
+H_0: \beta_1 = 0 \\
+H_1: \beta_1 \neq 0
+$$
+
+Now both large positive and large (in absolute value) negative values of the t-statistic are extreme (giving evidence against the null hypothesis). The p-value in this case is the sum of two probabilities. For $t = 5.1$ more extreme values against the null hypothesis are the ones greater than 5.1 and the ones less than -5.1.
+
+$$
+\text{p-value} = P(t < -5.1 | H_0) + P(t > 5.1 | H_0)
+$$
+
+We can compute it with a the `pt` function. Notice that this is the same value (up to rounding errors) as the one shown in the $Pr(>|t|)$ column in the output of `summary`.
+
+```{r}
+```
+
+How would the p-value look like if the t-statistic was negative, e.g. -5.1? Again, extreme values are the ones less that -5.1 and greater than the absolute value, i.e. 5.1. We can write this more succinctly (and this explains the notation for the column in the `summary` output):
+
+$$
+\text{p-value} = P(|t| > |\text{t-statistic}^{obs}| |H_0)
+$$
+
+Finally, let us see the distribution of p-values in the simulation study. Here we will compute it for the true null hypothesis $H_0: \beta_1 = 11.77, H_1: \beta_1 \neq 11.77$. Figure @fig-p-value-h0-true shows the estimated density of the p-values (in each sample). You can see that the density is roughly constant over the interval \[0, 1\]. Indeed, it can be shown that the p-value if uniformly distributed over this interval if the null hypothesis is true.
+
+```{r}
+# sim_slopes <- sim_slopes %>%
+#   mutate(
+#     p_value_h0_true = ...
+#   )
+```
+
+```{r}
+#| label: fig-p-value-h0-true
+#| fig-cap: "Distribution of p-values under the (true) null hypothesis"
+
+# sim_slopes %>%
+#   ggplot(aes(x = ...)) + 
+#   geom_density() + 
+#   labs(
+#     x = "p-value",
+#     y = "Density"
+#   )
+```
+
+When using the p-value to make a rejection decision we compare it to a predetermined probability of a wrong rejection of a true null hypothesis. This is the same approach that we followed when we derived the critical values of the tests. A widely used convention is to reject a null hypothesis if the p-value is less than 0.05.
+
+Let us apply this convention in the simulation and see in how many samples we make a wrong decision.
+
+```{r}
+# sim_slopes <- sim_slopes %>%
+#   mutate(
+#     reject_h0_based_on_p_value = ...
+#   )
+
+# table(sim_slopes$reject_h0_based_on_p_value)
+```
+
+## Confidence intervals {#sec-sim-ci}
+
+From the distribution of the t-statistic we can see that
+
+$$
+\text{t-statistic} = \frac{\hat{\beta}_1 - \beta_1}{se(\hat{\beta}_1)} \sim t(n - p)
+$$
+
+Therefore the probability to observed a value of the t-statistic in the interval \[$t_{\alpha / 2}(n - p)$, $t_{1 - \alpha / 2}$\] is $1 - \alpha$.
+
+$$
+P\left(t_{\alpha / 2}(n - p) < \frac{\hat{\beta}_1 - \beta_1}{se(\hat{\beta}_1)} < t_{1 - \alpha / 2}(n - p)\right) = \\
+P\left(\hat{\beta_1} + se(\hat{\beta}_1) t_{\alpha/2}(n - p) < \beta_1 < \hat{\beta_1} + se(\hat{\beta}_1) t_{1 - \alpha/2}(n - p) \right) = 1 - \alpha
+$$
+
+Compute the upper and the lower bounds of the confidence intervals for each sample in the simulation with a coverage probability of $1 - \alpha = 0.9$. In how many samples did the confidence interval contain the real coefficient $\beta_1$?
+
+```{r}
+# sim_slopes <- sim_slopes %>%
+#   mutate(
+#     CI_lower = ...,
+#     CI_upper = ...,
+#     ## Construct a new variables that is TRUE/FALSE if the
+#     ## true value of beta_1 (11.77) is inside the confidence interval
+#     beta1_in_CI = ...
+#   )
+```
+
+```{r}
+# sum(sim_slopes$beta1_in_CI)
+# mean(sim_slopes$beta1_in_CI)
+```
+
+The CI contained the true value of $\beta_1$ in 178 out of 200 samples (89 percent). This is quite close to the coverage probability $1 - \alpha = 0.9$ The CI that we constructed above are visualized in @fig-sim-ci. For the sake of clarity the plot is limited to the first 50 samples. Confidence intervals that do not contain the true value of $\beta_1$ are show in red. Notice that the boundaries differ from sample to sample (as to the coefficient estimates).
+
+```{r}
+#| label: fig-sim-ci
+#| fig-cap: "Confidence intervals for the first 50 samples. The vertical line is drawn at 11.77 (the real value of $\\beta_1$)."
+
+# sim_slopes %>%
+#   ungroup() %>%
+#   slice_head(n = 50) %>%
+#   ggplot(
+#     aes(
+#       x = estimate, 
+#       y = factor(R),
+#       xmin = CI_lower,
+#       xmax = CI_upper,
+#       color = beta1_in_CI
+#     )
+#   ) + 
+#   geom_point() + 
+#   geom_errorbarh() + 
+#   labs(
+#     x = "",
+#     y = "Sample",
+#     color = "Beta1 in CI"
+#   ) + 
+#   theme(
+#     axis.text.y = element_blank(),
+#     axis.ticks.y = element_blank(),
+#   ) + 
+#   geom_vline(
+#     xintercept = 15
+#   )
+```
+
+```{r}
+# dt <- tibble(
+#   x = 1:10,
+#   y = rnorm(10, mean = 2 + 0.3 * x, sd = 0.5)
+# )
+
+# fit <- lm(y ~ 0 + x, data = dt)
+# sum(residuals(fit))
+```
