@@ -34,8 +34,8 @@ flowchart LR
   A --> C(Sample 2)
   A --> D(Sample R)
   B --> B1[OLS estimates in sample 1]
-  C --> C1(OLS estimates in sample 2)
-  D --> D1(OLS estimates in sample R)
+  C --> C1[OLS estimates in sample 2]
+  D --> D1[OLS estimates in sample R]
 ```
 
 ## The population
