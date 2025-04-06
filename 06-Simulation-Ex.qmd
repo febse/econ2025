@@ -551,7 +551,9 @@ summary(lm(kid_score ~ 1 + mom_hs, data = kids))
 $$
 H_0: \beta_1 \leq 0 \\
 H_0: \beta_1 > 0
-$$ The sample value of the t-statistic is
+$$ 
+
+The sample value of the t-statistic is
 
 $$
 \frac{11.77 - 0}{2.3} \approx 5.1
