@@ -1,4 +1,4 @@
-# A Simulation Study (Exercise)  {#sec-simulation-anova-ex}
+# A Simulation Study (Exercise) {#sec-simulation-anova-ex}
 
 ```{r setup}
 ## Warning: to compile the notes you need the "bookdown" and the "broom" packages. Install them by
@@ -28,6 +28,20 @@ kids <- read_csv(
   "https://raw.githubusercontent.com/feb-uni-sofia/econometrics2020-solutions/master/data/childiq.csv") %>%
   select(kid_score, mom_hs)
 ```
+
+```{r}
+kids %>%
+  group_by(mom_hs) %>%
+  summarize(
+    n = n(),
+    mean = mean(kid_score)
+  )
+```
+
+```{r}
+lm(kid_score ~ mom_hs, data = kids)
+```
+
 
 ## The population
 
@@ -66,12 +80,12 @@ pop_summary <- pop %>%
   group_by(mom_hs) %>%
   summarize(
     n = n(),
+    share = n / nrow(pop),
     mean = mean(kid_score),
     sd = sd(kid_score),
   )
 pop_summary
 ```
-
 
 ```{r}
 pop %>%
@@ -82,10 +96,9 @@ pop %>%
       aes(xintercept = mean, color = factor(mom_hs))) +  
     geom_density() + 
     labs(
-      color = "Mother's status"
+      color = "Mother has HS degree"
     )
 ```
-
 
 ```{r}
 ## Simulation parameters
@@ -107,7 +120,8 @@ sim_coeffs <- sim %>%
      fit <- lm(kid_score ~ 1 + mom_hs, data = d)
      out <- fit %>% tidy()
      fit_summary <- fit %>% summary()
-     out["r.squared"] <- fit_summary$r.squared
+     out["r_squared"] <- fit_summary$r.squared
+     # out["dof"] <- fit_summary$
      out["sigma"] <- fit_summary$sigma
      out["sample_id"] <- id
      out
@@ -118,7 +132,6 @@ sim_coeffs <- sim %>%
 sim_slopes <- sim_coeffs %>%
   filter(term == "mom_hs")
 ```
-
 
 ```{r}
 # Exercise: 
@@ -163,11 +176,17 @@ sim_slopes %>%
 
 ## Key Points
 
+The OLS **estimator** for $\beta_1$ is the difference between the sample means of the two groups
+
 $$
 \hat{\beta}_1 = \bar{Y}_{1} - \bar{Y}_{0}
 $$
 
-1. What is the **expected** value of $\hat{\beta}_1?$
+where $\bar{Y}_1 = \frac{1}{n_1}\sum_{i: x_i = 1} Y_i$ is the sample mean of the kids with $x = 1$ and $\bar{Y}_0 = \frac{1}{n_0} \sum_{i: x_i = 0} Y_i$ is the sample mean of the group of kids with $\text{x} = 0$. The sample sizes of the two groups are $n_1$ and $n_0$.
+
+This is a formula that produces a **concrete value** given a concrete sample. Given another sample it will produce a different value.
+
+1.  What is the **expected** value of $\hat{\beta}_1?$ (the center of its distribution)
 
 $$
 E(\hat{\beta}_1) = E(\bar{Y}_{1} - \bar{Y}_{0}) = \mu_1 - \mu_0
@@ -177,14 +196,13 @@ $$
 
 ```
 
-2. What is the **variance** of $\hat{\beta}_1$
+2.  What is the **variance** of $\hat{\beta}_1$ (the spread of its distribution)
 
 ```{r}
 
 ```
 
-3. The variance of he error terms can be estimated by dividing the 
-residual sum of squares by the degrees of freedom of the model
+3.  The variance of he error terms can be estimated by dividing the residual sum of squares by the degrees of freedom of the model
 
 $$
 \hat{\sigma}^2 = \frac{1}{n - p} \sum_{i}^{n}(y_i - \hat{y}_i)^2
@@ -196,7 +214,7 @@ What is its expected value?
 
 ```
 
-4. The variance of $\hat{\beta}_1$ (in this special case) is:
+4.  The variance of $\hat{\beta}_1$ (in this special case) is:
 
 $$
 \begin{align*}
@@ -205,7 +223,7 @@ Var(\hat{\beta}_1) & = Var(\bar{Y}_1) + Var(\bar{Y}_2) \\
 \end{align*}
 $$
 
-To get the _estimated_ variance of $\hat{\beta}_1$, replace the unknown $\sigma^2$ with its estimate $\hat{\sigma}^2$:
+To get the *estimated* variance of $\hat{\beta}_1$, replace the unknown $\sigma^2$ with its estimate $\hat{\sigma}^2$:
 
 $$
 \begin{align*}
@@ -213,6 +231,7 @@ $$
 \end{align*}
 $$
 
+The square root of the this estimated variance (the standard deviation) is called the **standard error** of $\hat{\beta}_1$
 
 What is its expected value?
 
@@ -225,9 +244,11 @@ What is its expected value?
 ### Testing a true null hypothesis {#sec-testing-true-h0}
 
 $$
-H_0: \beta_1 \geq 15\\
-H_1: \beta_1 < 15
-$$ {#eq-hypothesis-true-one-sided}
+\begin{align*}
+H_0: & \beta_1 \geq 15\\
+H_1: & \beta_1 < 15
+\end{align*}
+$$
 
 $$
 \text{t-statistic} = \frac{\hat{\beta}_1 - \beta_1^{H_o}}{se(\hat{\beta}_1)}
@@ -236,8 +257,6 @@ $$
 $$
 \text{t-statistic} = \frac{\hat{\beta}_1 - 15}{se(\hat{\beta}_1)}.
 $$
-
-
 
 ```{r}
 # Compute the test statistic for each sample
@@ -273,7 +292,6 @@ $$
 #   xlim(c(-4, 8)) +
 #   scale_x_continuous(breaks = c(-3, -2, 0))
 ```
-
 
 ```{r}
 # sim_slopes <- sim_slopes %>%
@@ -551,7 +569,7 @@ summary(lm(kid_score ~ 1 + mom_hs, data = kids))
 $$
 H_0: \beta_1 \leq 0 \\
 H_0: \beta_1 > 0
-$$ 
+$$
 
 The sample value of the t-statistic is
 
@@ -564,7 +582,6 @@ For this alternative extreme (consistent with the alternative) values of the t-s
 $$
 P(t > \text{t-statistic}^{obs} | H_0)
 $$
-
 
 ```{r}
 ## Calculate the p-value for the one-sided alternative
@@ -585,7 +602,9 @@ For this alternative extreme values of the t-statistic are large (in absolute va
 
 $$
 P(t < \text{t-statistic}^{obs} | H_0)
-$$ We can compute this probability using `pt`.
+$$
+
+We can compute this probability using `pt`.
 
 ```{r}
 

@@ -12,17 +12,12 @@ if (!require("broom")) {
   install.packages("broom")
 }
 
-if (!require("patchwork")) {
-  install.packages("patchwork")
-}
-
 if (!require("latex2exp")) {
   install.packages("latex2exp")
 }
 
 library(tidyverse)
 library(broom)
-library(patchwork)
 
 kids <- read_csv(
   "https://raw.githubusercontent.com/feb-uni-sofia/econometrics2020-solutions/master/data/childiq.csv") %>%
@@ -38,9 +33,9 @@ flowchart LR
   A[Population] --> B(Sample 1)
   A --> C(Sample 2)
   A --> D(Sample R)
-  B --> B1(Compute the OLS estimates in sample 1)
-  C --> C1(Compute the OLS estimates in sample 2)
-  D --> D1(Compute the OLS estimates in sample R)
+  B --> B1[OLS estimates in sample 1]
+  C --> C1(OLS estimates in sample 2)
+  D --> D1(OLS estimates in sample R)
 ```
 
 ## The population
@@ -300,7 +295,7 @@ $$
 
 and we already know that the denominator is just the sum of squared deviations of $x$.
 
-So we can denote the denomitator as
+So we can denote the denominator as
 
 $$
 S_{xx} = \sum_{i = 1}^n (x_i - \bar{x})^2 = \sum_{i = 1}^n (x_i - \bar{x})x_i
