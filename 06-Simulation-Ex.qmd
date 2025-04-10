@@ -29,37 +29,18 @@ kids <- read_csv(
   select(kid_score, mom_hs)
 ```
 
-```{r}
-kids %>%
-  group_by(mom_hs) %>%
-  summarize(
-    n = n(),
-    mean = mean(kid_score)
-  )
-```
-
-```{r}
-lm(kid_score ~ mom_hs, data = kids)
-```
-
-
-## The population
-
-In order to study the statistical properties of the OLS estimators $\hat{\beta}_0$ and $\hat{\beta}_1$ we will generate a large number of samples from the following model:
-
-$$
-\begin{align*}
-& \text{Y}_i \sim N(\mu_i, \sigma^2 = 20^2), \quad i = 1,\ldots, N = 1e6 \\
-& \mu_i = 80 + 15 x_i, \quad x_i \in \{0, 1\}
-\end{align*}
-$$ {#eq-simulation-anova-model}
 
 ```{r}
 set.seed(123)
 
+## Simulation parameters
+
+n <- 20 # Sample size
+R <- 1000 # Number of samples
+
 ## Population parameters
 
-N <- 2e6 # Number of children in the population
+N <- 3e6 # Number of children in the population
 beta0 <- 80 # Average IQ of children with mom_hs = 0
 beta1 <- 15 # Difference in average IQ between children with mom_hs = 1 and mom_hs = 0
 sigma <- 20 # Standard deviation of the IQ scores
@@ -73,38 +54,6 @@ pop <- tibble(
   mutate(
       kid_id = 1:n()
   )
-```
-
-```{r}
-pop_summary <- pop %>%
-  group_by(mom_hs) %>%
-  summarize(
-    n = n(),
-    share = n / nrow(pop),
-    mean = mean(kid_score),
-    sd = sd(kid_score),
-  )
-pop_summary
-```
-
-```{r}
-pop %>%
-    ggplot(aes(x = kid_score, color = factor(mom_hs))) +
-    geom_vline(
-      data = pop_summary,
-      lty = 2,
-      aes(xintercept = mean, color = factor(mom_hs))) +  
-    geom_density() + 
-    labs(
-      color = "Mother has HS degree"
-    )
-```
-
-```{r}
-## Simulation parameters
-
-n <- 20 # Sample size
-R <- 1000 # Number of samples
 
 sim <- pop %>%
   slice_sample(n = n * R, replace = TRUE) %>%
@@ -129,8 +78,48 @@ sim_coeffs <- sim %>%
   bind_rows()
 
 ## Creates a separate table with the coefficients for mom_hs
-sim_slopes <- sim_coeffs %>%
-  filter(term == "mom_hs")
+sim_slopes <- sim_coeffs %>% filter(term == "mom_hs")
+```
+
+In order to study the statistical properties of the OLS estimators $\hat{\beta}_0$ and $\hat{\beta}_1$ we will generate a large number of samples from the following model:
+
+$$
+\begin{align*}
+& \text{Y}_i \sim N(\mu_i, \sigma^2 = 20^2), \quad i = 1,\ldots, N \\
+& \mu_i = 80 + 15 x_i, \quad x_i \in \{0, 1\}
+\end{align*}
+$$ {#eq-simulation-anova-model}
+
+where $x_i$ is a binary variable that indicates whether the mother of child $i$ has a high school degree.
+
+```{r}
+pop_summary <- pop %>%
+  group_by(mom_hs) %>%
+  summarize(
+    n = n(),
+    share = n / nrow(pop),
+    mean = mean(kid_score),
+    sd = sd(kid_score)
+  )
+pop_summary
+```
+
+```{r}
+pop %>%
+    ggplot(aes(x = kid_score, color = factor(mom_hs))) +
+    geom_vline(
+      data = pop_summary,
+      lty = 2,
+      aes(xintercept = mean, color = factor(mom_hs))) +  
+    geom_density() + 
+    labs(
+      color = "Mother has HS degree"
+    ) + 
+    scale_x_continuous(
+      limits = c(0, 200),
+      breaks = c(0, 80, 95, 200)
+    )
+    
 ```
 
 ```{r}
@@ -143,15 +132,28 @@ sim_slopes <- sim_coeffs %>%
 sample1 <- sim %>% filter(sample_id == 1)
 lm(kid_score ~ mom_hs, data = sample1)
 
+sample2 <- sim %>% filter(sample_id == 2)
+lm(kid_score ~ mom_hs, data = sample2)
+```
+
+```{r}
+x <- rnorm(10000)
+mean(x)
+sd(x)
+x[0:20]
 ```
 
 ## Distribution of the OLS estimates
+
 
 ```{r}
 #| label: fig-sim-distr-slopes
 #| fig-cap: "Sampling distribution of $\\hat{\\beta}_1$. Each dot represents the slope estimate in one sample."
 
 # The red line is drawn at the population value of $\beta_1$: 11.77. The  position of the dots on the y-axis does not convey any meaningful information and it only serves to  disentangle  the points so that they don't overplot.
+
+qsim <- quantile(sim_slopes$estimate, c(0, 0.1, 0.25, 0.75, 0.9, 1), na.rm = TRUE) %>% round(1)
+names(qsim) <- NULL
 
 sim_slopes %>%
   ggplot(aes(x = estimate)) +
@@ -166,11 +168,16 @@ sim_slopes %>%
   geom_density(color = "steelblue") +
   ## Draws a vertical line a 11.77 (the value of beta_1 used in the simulation)
   geom_vline(xintercept = 15, color = "firebrick") + 
+  geom_vline(xintercept = qsim, color = "steelblue", lty = 2, alpha = 0.8) +
   ## Sets the labels of the x and y axis and the title of the plot
   labs(
     x = "Estimate",
-    title = "Distribution of the slope estimates in 1000 samples)",
+    title = "Distribution of the slope estimates over 1,000 samples",
     y = "Density"
+  ) + 
+  scale_x_continuous(
+    limits = c(min(qsim) - 2, max(qsim) + 2),
+    breaks = c(15, qsim)
   )
 ```
 
@@ -202,7 +209,7 @@ $$
 
 ```
 
-3.  The variance of he error terms can be estimated by dividing the residual sum of squares by the degrees of freedom of the model
+3.  The variance of the error terms can be estimated by dividing the residual sum of squares by the degrees of freedom of the model
 
 $$
 \hat{\sigma}^2 = \frac{1}{n - p} \sum_{i}^{n}(y_i - \hat{y}_i)^2
@@ -210,9 +217,6 @@ $$
 
 What is its expected value?
 
-```{r}
-
-```
 
 4.  The variance of $\hat{\beta}_1$ (in this special case) is:
 
