@@ -18,6 +18,7 @@ book:
     - 04-2-Continuous-Distributions.qmd
     - 05-One-Way-ANOVA.qmd
     - 06-Simulation.qmd
+    - 07-Simulation-Tests-Ex.qmd
     - 08-Multiple-Regression.qmd
     # - 08-Interactions.qmd
     # - lecture_problems.qmd
