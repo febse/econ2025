@@ -50,7 +50,6 @@ if (!require("GGally")) {
 
 library(tidyverse)
 library(patchwork)
-library(plotly)
 library(GGally)
 crime <- read_tsv("https://raw.githubusercontent.com/feb-uni-sofia/econometrics2020-solutions/master/data/crime.csv") %>%
   select(-I)
@@ -110,31 +109,10 @@ p2 + p3
 
 ## First model: crime and education
 
-$$
-\underbrace{C_i}_{\text{Crime}} = \beta_0 + \beta_1 \underbrace{\text{HS}_i}_{\text{Share of persons with high school degree}} + \underbrace{e_i}_{\text{Random term}}, \quad i = 1,\ldots,n = 67
-$$
-
 ```{r}
-#
-# summary(fit_C_HS)
+fit_C_HS <- lm(C ~ HS, data = florida_crime)
+summary(fit_C_HS)
 ```
-
-Estimated equation: $\hat{C}$: expected crime rate
-
-$$
-\hat{C}_i = -50.8 + 1.48 \text{HS}_i
-$$
-
-$$
-\hat{C}_{HS = 80}  = -50.8 + 1.48 \cdot 80 = 67.6\\
-\hat{C}_{HS = 50}  = -50.8 + 1.48 \cdot 50 = 23.2\\
-$$
-
-$$
-\hat{C}_{HS = 80} - \hat{C}_{HS = 79} = -50.8 + 1.48 \cdot 80 - (-50.8 + 1.48 \cdot 79) = 1.48\cdot(80 - 79) = 1.48
-$$
-
-The constant in the model is the expected number of crimes (per 100,000 citizens) in a county where HS = 0.
 
 ```{r}
 crime %>%
@@ -153,41 +131,17 @@ C_i = \beta_0 + \beta_1 (\text{HS}_i - \overline{HS}) + e_i
 $$
 
 ```{r}
+florida_crime <- florida_crime %>%
+    mutate(
+        HS_c = HS - mean(HS)
+    )
 
+fit_C_HS1 <- lm(C ~ HS, data = florida_crime)
+summary(fit_C_HS1)
 ```
 
 $$
 \hat{C}_i = 52.4 + 1.48 (\text{HS}_i - \overline{HS})
-$$
-
-### Predictions
-
-Predict the crime rate in 3 hypothetical counties using the centered predictor model.
-
-$$
-\hat{C}_{HS = 0} = ? \\
-\hat{C}_{HS = \overline{HS}} = ? \\
-\hat{C}_{HS = 100} = ?
-$$
-
-Using the original (non-centered predictor) equation:
-
-$$
-\hat{C}_i = -50.8 + 1.48 \text{HS}_i
-$$
-
-$$
-\hat{C}_{HS = 0} = -50.8\\
-\hat{C}_{HS = \overline{HS}} = -50.8 + 1.48 \cdot 69.5 = 52.06 \\
-\hat{C}_{HS = 100} = -50.8 + 1.48 \cdot 100 = 97.2
-$$
-
-Standard errors of predictions?
-
-$$
-SE(\hat{C}_{HS = 0}) = ?\\
-SE(\hat{C}_{HS = \overline{HS}}) = ? \\
-SE(\hat{C}_{HS = 100}) = ?
 $$
 
 ## Second model: crime and urbanization
@@ -197,21 +151,8 @@ C_i = \beta_0 + \beta_1 U_i + e_i
 $$
 
 ```{r}
-fit_U_HS <- lm(C ~ 1 + U, data = crime)
-summary(fit_U_HS)
+
 ```
-
-Initial expectation: more crime in more urbanized counties.
-
-Estimated regression equation:
-
-$$
-\hat{C}_i = 24.5 + 0.56 U_i
-$$
-
-The coefficient of U is positive. This implies that expected crime rate $\hat{C}$ increases with increasing values of $U$ (degree of urbanization).
-
-Homework: difference in expected crime rates for two counties with $U = 80$ and $U = 50$.
 
 ## Third Model: Education and Urbanization
 
@@ -222,6 +163,7 @@ $$
 ```{r}
 # Fit the model and print the summary
 
+  
 ```
 
 ## Graphical representation of the data
@@ -242,29 +184,6 @@ fit_C_U_HS <- lm(C ~ 1 + HS + U, data = crime)
 ## Print the summary
 
 ```
-
-Estimated regression equation:
-
-$$
-\hat{C}_i = 59.1 -0.58 \text{HS}_i  + 0.68 \text{U}_i
-$$
-
-$$
-\hat{C}_{HS = 80} = 59.1 - 0.58 \cdot 80 + 0.68 U = 12.4 + 0.68 U \\
-\hat{C}_{HS = 50} = 59.1 - 0.58 \cdot 50 + 0.68 U = 29.93+ 0.68 U
-$$
-
-$$
-\hat{C}_{HS = 80, U = 50} = 59.1 - 0.58 \cdot 80 + 0.68 U = 12.4 + 0.68 \cdot 50 = 46.4\\
-\hat{C}_{HS = 50, U = 50} = 59.1 - 0.58 \cdot 50 + 0.68 U = 29.93+ 0.68 \cdot 50 = 63.9\\
-\hat{C}_{HS = 80, U = 50} - \hat{C}_{HS = 50, U = 50} = 12.4 - 29.93 = -16.9 \approx -0.58 \cdot \underbrace{30}_{\Delta HS = 80 - 50} \quad \text{approx. due to rounding}
-$$
-
-Homework: compute the difference:
-
-$$
-\hat{C}_{HS = 80, U = 10} - \hat{C}_{HS = 50, U = 10} = ?
-$$
 
 ```{r}
 ## First argument: model fit object from lm
@@ -327,20 +246,6 @@ Choose a significance level: 5% probability to falsely reject a true null hypoth
 ```{r}
 
 ```
-
-## Linearity
-
-Real structure:
-
-$$
-y_i = 3 + x^2 + u_i, \quad u_i \sim N(0, 500^2)
-$$ $$
-y_i = \beta_0 + \beta_1 x^2 + u_i, \quad u_i \sim N(0, 500^2)
-$$ Example of a non-linear model
-
-$$
-y_i = \beta + \beta^2 x + u_i
-$$
 
 ```{r}
 dt <- tibble(
