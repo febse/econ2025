@@ -253,7 +253,8 @@ grid_dt <- expand.grid(
   HS = seq(min(crime$HS), max(crime$HS), length.out = 30),
   U = seq(min(crime$U), max(crime$U), length.out = 30)
 )
-grid_dt$C_hat <- predict(fit_C_U_HS, newdata = grid)
+C_hat <- predict(fit_C_U_HS, newdata = grid)
+C_hat_M <- matrix(C_hat, nrow=30, ncol=30, byrow=TRUE)
 
 # Create the 3D scatter plot and regression plane
 plot_ly() %>%
@@ -269,7 +270,7 @@ plot_ly() %>%
     data=grid_dt,
     x = ~unique(HS),
     y = ~unique(U),
-    z = ~matrix(C_hat, 30, 30),
+    z = C_hat_M,
     colorscale = "Viridis",
     opacity = 0.7,
     name = "Regression plane"
