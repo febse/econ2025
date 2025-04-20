@@ -30,8 +30,6 @@ During World war 2 combat aviation played a crucial role but also suffered heavy
 # Two continuous predictors
 
 ```{r}
-# install.packages(c("plotly", "GGally"))
-
 if (!require("tidyverse")) {
   install.packages("tidyverse")
 }
@@ -46,6 +44,10 @@ if (!require("patchwork")) {
 
 if (!require("GGally")) {
   install.packages("GGally")
+}
+
+if (!require("plotly")) {
+  install.packages("plotly")
 }
 
 library(tidyverse)
@@ -242,6 +244,46 @@ fit_C_U_HS <- lm(C ~ 1 + HS + U, data = crime)
 ## Print the summary
 
 ```
+
+```{r}
+# Use plotly to create a 3d scatter and a plane
+
+# Create a grid of values for HS and U to calculate the predicted plane
+grid_dt <- expand.grid(
+  HS = seq(min(crime$HS), max(crime$HS), length.out = 30),
+  U = seq(min(crime$U), max(crime$U), length.out = 30)
+)
+grid_dt$C_hat <- predict(fit_C_U_HS, newdata = grid)
+
+# Create the 3D scatter plot and regression plane
+plot_ly() %>%
+  add_markers(
+    data = crime,
+    x = ~HS,
+    y = ~U,
+    z = ~C,
+    marker = list(size = 3),
+    name = "Data points"
+  )  %>%
+  add_surface(
+    data=grid_dt,
+    x = ~unique(HS),
+    y = ~unique(U),
+    z = ~matrix(C_hat, 30, 30),
+    colorscale = "Viridis",
+    opacity = 0.7,
+    name = "Regression plane"
+  ) %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "HS (Education)"),
+      yaxis = list(title = "U (Urbanization)"),
+      zaxis = list(title = "C (Crime)")
+    ),
+    title = "3D Scatter Plot with Regression Plane"
+  )
+```
+
 
 Estimated regression equation:
 
