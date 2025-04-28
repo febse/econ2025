@@ -32,6 +32,7 @@ A lot of the work in R Studio can be done using keyboard shortcuts. This can spe
 You can find more shortcuts and a concise overview of the elements of R Studio in the [R Studio Cheatsheet](https://posit.co/wp-content/uploads/2022/10/rstudio-ide-1.pdf).
 
 For a complete list of shortcuts, you can go to `Help` -\> `Keyboard Shortcuts Help`.
+
 :::
 
 ## Arithmetic Operations
