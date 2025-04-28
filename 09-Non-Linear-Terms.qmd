@@ -5,7 +5,78 @@
 library(tidyverse)
 ```
 
-## Simpson's paradox
+## Simpson's paradox (1)
+
+```{r}
+berkley <- read_csv(
+  "https://waf.cs.illinois.edu/discovery/berkeley.csv"
+  ) %>%
+  mutate(
+    is_rejected = ifelse(Admission == "Accepted", 0, 1),
+  )
+```
+
+```{r}
+berkley %>%
+  group_by(Gender) %>%
+    summarize(
+        n = n(),
+        n_rejected = sum(is_rejected),
+        p_rejected = mean(is_rejected)
+    )
+```
+
+```{r}
+berkley %>%
+  group_by(Major) %>%
+    summarize(
+        n = n(),
+        n_rejected = sum(is_rejected),
+        p_rejected = mean(is_rejected)
+    )
+```
+
+```{r}
+admission_by_major_gender <- berkley %>%
+  group_by(Major, Gender) %>%
+    summarize(
+        n = n(),
+        n_rejected = sum(is_rejected),
+        p_rejected = mean(is_rejected)
+    )
+admission_by_major_gender
+```
+
+```{r}
+# Plot the rejection rate by major and gender as a bar plot
+
+admission_by_major_gender %>%
+  ggplot(aes(x = Major, y = p_rejected, fill=Gender)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    labs(
+      y = "Admission rate",
+      x = "Major"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+```{r}
+berkley %>%
+  group_by(Major, Gender) %>%
+    summarize(
+        n = n(),
+        n_admitted = sum(is_admitted),
+        p_admitted = mean(is_admitted)
+    )
+```
+
+```{r}
+lm(is_admitted ~ Gender + Major, data = berkley) %>%
+  summary()
+```
+
+## Simpson's paradox (2)
 
 The data set `gdp2019` contains the GDP per capita in current prices for 142 countries in 2019. In addition, the variable `spending` shows the government spending in these countries as a share (in percent) of GDP.
 
@@ -177,7 +248,6 @@ m2 %>% summary()
 m3 <- lm(drink ~ sex * gpa, data = stu)
 m3 %>% summary()
 ```
-
 
 ## Polynomial regression
 
@@ -391,7 +461,7 @@ AIC(fit2)
 AIC(fit3)
 ```
 
-4. Validation
+4.  Validation
 
 ```{r}
 smpl <- sample(1:100, 20)
