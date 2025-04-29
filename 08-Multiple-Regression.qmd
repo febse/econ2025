@@ -232,6 +232,9 @@ $$
 ggpairs(crime, columns = c(4, 3, 2), lower = list(continuous = "smooth"))
 ```
 
+```{r}
+
+```
 ## Fourth Model: Crime, Education, and Urbanization
 
 $$
