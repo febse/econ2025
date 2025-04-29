@@ -256,7 +256,7 @@ grid_dt <- expand.grid(
   HS = seq(min(crime$HS), max(crime$HS), length.out = 30),
   U = seq(min(crime$U), max(crime$U), length.out = 30)
 )
-C_hat <- predict(fit_C_U_HS, newdata = grid)
+C_hat <- predict(fit_C_U_HS, newdata = grid_dt)
 C_hat_M <- matrix(C_hat, nrow=30, ncol=30, byrow=TRUE)
 
 # Create the 3D scatter plot and regression plane
