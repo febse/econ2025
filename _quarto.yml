@@ -20,7 +20,7 @@ book:
     - 06-Simulation.qmd
     - 07-Simulation-Tests-Ex.qmd
     - 08-Multiple-Regression.qmd
-    # - 08-Interactions.qmd
+    - 09-Non-Linear-Terms.qmd
     # - lecture_problems.qmd
     # - 00-Homework-Instructions.qmd  
     # - 02a-Continuous-Distributions.qmd
