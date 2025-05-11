@@ -72,7 +72,7 @@ berkley %>%
 ```
 
 ```{r}
-lm(is_admitted ~ Gender + Major, data = berkley) %>%
+lm(is_rejected ~ Gender + Major, data = berkley) %>%
   summary()
 ```
 
@@ -214,7 +214,7 @@ library(car)
 linearHypothesis(fit2, c("gdppc_grMedium-low - gdppc_grMedium-high = 0"))
 ```
 
-## Interaction effect
+## Interaction Effects
 
 ```{r}
 # Load the data
@@ -234,19 +234,24 @@ stu %>%
     geom_smooth(method=lm)
 ```
 
+Estimate and iterpret the results of the following models:
+
+- $\text{drink}_i = \beta_0 + \beta_1\text{gpa}_i + e_i$
+- $\text{drink}_i = \beta_0 + \beta_1 \text{sexMale}_i + e_i$
+- $\text{drink}_i =\beta_0 + \beta_1 \text{gpa}_i + \beta_2 \text{sexMale}_i + e_i$
+- $\text{drink}_i = \beta_0 + \beta_1 \text{gpa}_i + \beta_2 \text{sexMale}_i + 
+\beta_3 \text{gpa}_i \cdot \text{sexMale}_i$
+
 ```{r}
-m1 <- lm(drink ~ gpa, data = stu)
-m1 %>% summary()
+
 ```
 
 ```{r}
-m2 <- lm(drink ~ sex + gpa, data = stu)
-m2 %>% summary()
+
 ```
 
 ```{r}
-m3 <- lm(drink ~ sex * gpa, data = stu)
-m3 %>% summary()
+
 ```
 
 ## Polynomial regression
