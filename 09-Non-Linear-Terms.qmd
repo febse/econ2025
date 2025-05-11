@@ -1,5 +1,8 @@
 # Non-linear terms
 
+Open in Colab: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/febse/econ2025/blob/main/09-Non-Linear-Terms.ipynb)
+
+
 ```{r}
 # install.packages(c("tidyverse"))
 library(tidyverse)
@@ -60,16 +63,6 @@ admission_by_major_gender %>%
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-
-```{r}
-berkley %>%
-  group_by(Major, Gender) %>%
-    summarize(
-        n = n(),
-        n_admitted = sum(is_admitted),
-        p_admitted = mean(is_admitted)
-    )
-```
 
 ```{r}
 lm(is_rejected ~ Gender + Major, data = berkley) %>%
