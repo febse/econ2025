@@ -21,6 +21,7 @@ book:
     - 07-Simulation-Tests-Ex.qmd
     - 08-Multiple-Regression.qmd
     - 09-Non-Linear-Terms.qmd
+    - 10-Interaction-Effects.ipynb
     # - lecture_problems.qmd
     # - 00-Homework-Instructions.qmd  
     # - 02a-Continuous-Distributions.qmd
