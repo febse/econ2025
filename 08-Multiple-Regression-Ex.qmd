@@ -51,6 +51,7 @@ if (!require("GGally")) {
 library(tidyverse)
 library(patchwork)
 library(GGally)
+
 crime <- read_tsv("https://raw.githubusercontent.com/feb-uni-sofia/econometrics2020-solutions/master/data/crime.csv") %>%
   select(-I)
 ```
