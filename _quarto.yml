@@ -22,6 +22,7 @@ book:
     - 08-Multiple-Regression.qmd
     - 09-Non-Linear-Terms.qmd
     - 10-Interaction-Effects.ipynb
+    - 11-Confidence-Intervals.ipynb
     # - lecture_problems.qmd
     # - 00-Homework-Instructions.qmd  
     # - 02a-Continuous-Distributions.qmd
