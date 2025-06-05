@@ -19,10 +19,11 @@ book:
     - 05-One-Way-ANOVA.qmd
     - 06-Simulation.qmd
     - 07-Simulation-Tests-Ex.qmd
-    - 08-Multiple-Regression.qmd
-    - 09-Non-Linear-Terms.qmd
+    - 08-Multiple-Regression.ipynb
+    - 09-Categorical-Variables.ipynb
     - 10-Interaction-Effects.ipynb
     - 11-Confidence-Intervals.ipynb
+
     # - lecture_problems.qmd
     # - 00-Homework-Instructions.qmd  
     # - 02a-Continuous-Distributions.qmd
